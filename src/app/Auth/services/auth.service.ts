@@ -7,12 +7,12 @@ import {SignupRequest} from '../model/signup-request';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private API_URL = 'http://localhost:8080/api/auth'; // Cambia por tu endpoint real
+  private API_URL = 'http://localhost:8080/api/v1/auth'; // Cambia por tu endpoint real
 
   constructor(private http: HttpClient) {}
 
   login(req: LoginRequest): Observable<User> {
-    return this.http.post<User>(`${this.API_URL}/login`, req);
+    return this.http.post<User>(`${this.API_URL}/signin`, req);
   }
 
   signup(req: SignupRequest): Observable<User> {
