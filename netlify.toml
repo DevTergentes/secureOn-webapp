@@ -1,7 +1,7 @@
 [build]
 
   command = "ng build"
-  publish = "dist/chemtrack-webapp/browser"
+  publish = "dist/secureon-webapp/browser"
 
 [[redirects]]
   from = "/*"

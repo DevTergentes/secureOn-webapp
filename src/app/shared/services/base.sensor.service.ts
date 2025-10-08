@@ -12,7 +12,7 @@ import {Sensor} from '../../Management/monitoring/model/monitoring';
 })
 
 export class BaseSensorService {
-  private apiUrl = 'http://localhost:8080/api/chemtrack/v1';
+  private apiUrl = 'http://localhost:8080/api/secureon/v1';
 
   constructor(private http: HttpClient) {}
 
