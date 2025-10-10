@@ -15,6 +15,7 @@ export class SignupComponent {
   username = '';
   email = '';
   password = '';
+  role = 'ROLE_DRIVER';
   error = '';
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -23,7 +24,8 @@ export class SignupComponent {
     this.authService.signup({
       username: this.username,
       email: this.email,
-      password: this.password
+      password: this.password,
+      role: this.role
     }).subscribe({
       next: () => this.router.navigate(['/login']),
       error: () => this.error = 'Registration failed'
