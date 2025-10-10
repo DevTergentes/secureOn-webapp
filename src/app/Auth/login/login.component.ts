@@ -21,10 +21,11 @@ export class LoginComponent {
   onLogin() {
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (user) => {
+        localStorage.setItem('token', user.token); // Guarda el token
         this.router.navigate(['/services']);
       },
       error: (err) => {
-        this.error = 'Invalid credentials';
+        this.error = 'Credenciales inválidas';
       }
     });
   }
