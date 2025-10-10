@@ -44,11 +44,12 @@ export class BaseService {
 
   // --- Métodos para Incidents ---
   getIncidents(): Observable<Incident[]> {
-    return this.http.get<Incident[]>(`${this.apiUrl}/incidents`);
-  }
-
-  getIncidentById(id: string): Observable<Incident> {
-    return this.http.get<Incident>(`${this.apiUrl}/incidents/${id}`);
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.get<Incident[]>(`${this.apiUrl}/incidents`, { headers });
   }
 
   createIncident(data: any): Observable<Incident> {
@@ -61,7 +62,12 @@ export class BaseService {
 
   // --- Métodos para Services ---
   getServices(): Observable<Services[]> {
-    return this.http.get<Services[]>(`${this.apiUrl}/services`);
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.get<Services[]>(`${this.apiUrl}/services`, { headers });
   }
 
   getServiceById(id: string): Observable<any> {
@@ -78,7 +84,12 @@ export class BaseService {
 
   // --- Métodos para Deliveries ---
   getDeliveries(): Observable<Delivery[]> {
-    return this.http.get<Delivery[]>(`${this.apiUrl}/deliveries`);
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.get<Delivery[]>(`${this.apiUrl}/deliveries`, { headers });
   }
 
   getDeliveryById(id: string): Observable<Delivery> {
