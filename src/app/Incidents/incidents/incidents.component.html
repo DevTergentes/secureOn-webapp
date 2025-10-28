@@ -1,0 +1,35 @@
+<!-- src/app/components/incidents/incidents.component.html -->
+<div class="incidents-container">
+  <div class="header">
+    <h1>Incidents</h1>
+  </div>
+  <mat-card class="search-card">
+    <div class="search-container">
+      <input matInput placeholder="Search for incidents..." [(ngModel)]="searchText"
+             (input)="filterIncidents()" />
+      <button mat-icon-button class="search-button">
+        <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+      </button>
+    </div>
+  </mat-card>
+
+  <div class="incidents-list">
+    <mat-card class="incident-card" *ngFor="let incident of filteredIncidents">
+      <div class="incident-info">
+        <img
+          src="https://github.com/user-attachments/assets/3d710fe1-ae8d-4760-b80f-d217acd4c24c"
+          alt="Incident Icon"
+          class="incident-icon"
+        />
+
+        <div>
+          <h3>{{ incident.incidentPlace }}</h3>
+          <p class="description-title">Description:</p>
+          <p class="description" [innerText]="incident.description"></p>
+        </div>
+        <span class="date">{{ incident.date }}</span>
+      </div>
+    </mat-card>
+  </div>
+<!--  <button class="floating-button" [routerLink]="['/add-incident']">Add new incident</button>-->
+</div>

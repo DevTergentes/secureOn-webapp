@@ -1,0 +1,93 @@
+.add-delivery-page-wrapper {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  overflow-y: auto;
+}
+
+/* Moderniza y compacta el card */
+.add-delivery-card {
+  width: 100%;
+  max-width: 340px;            /* Antes 400px */
+  background: #fff;
+  border-radius: 18px;         /* Ligeramente más redondeado */
+  box-shadow: 0 6px 24px rgba(136,192,27,0.10);
+  padding: 22px 18px 18px 18px;  /* Antes 32px 24px 24px 24px */
+  margin: 32px 0;              /* Un poco de espacio superior/inferior en móviles */
+}
+
+/* Título más compacto */
+.title {
+  text-align: center;
+  margin-bottom: 12px;        /* Antes 22px */
+  color: #222;
+  font-size: 1.5em;           /* Antes 2em */
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.form-group {
+  margin-bottom: 10px;        /* Antes 16px */
+}
+
+label {
+  display: block;
+  margin-bottom: 4px;         /* Antes 6px */
+  color: #222;
+  font-size: 0.97em;
+}
+
+.input {
+  width: 100%;
+  padding: 9px 10px;         /* Antes 11px 12px */
+  border-radius: 8px;        /* Antes 10px */
+  border: 1.5px solid #8882;
+  background: #fafafa;
+  font-size: 1em;            /* Antes 1.1em */
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #88C01B;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;                  /* Antes 12px */
+  justify-content: flex-end;
+  margin-top: 14px;          /* Antes 16px */
+}
+
+.save-btn, .cancel-btn {
+  padding: 7px 18px;         /* Antes 9px 22px */
+  font-size: 1em;            /* Antes 1.1em */
+  border-radius: 8px;
+}
+
+/* Puedes dejar el resto igual */
+.save-btn {
+  background-color: #88C01B;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.save-btn:hover {
+  background: #659a0f;
+  transform: scale(1.03);
+}
+.cancel-btn {
+  background-color: #e0e0e0;
+  color: #444;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.cancel-btn:hover {
+  background: #bbbbbb;
+}

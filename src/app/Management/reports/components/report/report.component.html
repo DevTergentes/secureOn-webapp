@@ -1,0 +1,37 @@
+<div class="delivery-details-container">
+  <div class="header">
+    <h2>Delivers</h2>
+    <h4>Report</h4>
+    <img
+      src="https://github.com/user-attachments/assets/63ca6961-f592-49cd-a7d1-0a646b71ae12"
+      alt="Delivery Icon"
+      class="delivery-icon"
+    />
+  </div>
+
+  <div class="delivery-details-card-container">
+    <!-- MUESTRA TODOS LOS RECORDS -->
+    <mat-card class="delivery-details-card" *ngFor="let record of records">
+      <div class="delivery-details-header">
+        <h3>Report ID: {{ record.id }}</h3>
+        <p>Sensor ID: {{ record.sensorId }}</p>
+      </div>
+      <div class="delivery-details-body">
+        <div class="delivery-details-body-subtitle">
+          <p>Report Details</p>
+        </div>
+        <p>Gas Value: <span>{{ record.gasValue }}</span></p>
+        <p>HeartRate Value: <span>{{ record.heartRateValue }}</span></p>
+        <p>Temperature Value: <span>{{ record.temperatureValue }}</span></p>
+        <p>Location: <span>{{ record.latitude }}, {{ record.longitude }}</span></p>
+        <p>Timestamp:
+          <span *ngIf="record.timestamp && record.timestamp.length >= 6">
+            {{ record.timestamp[0] }}/{{ record.timestamp[1] }}/{{ record.timestamp[2] }}
+            {{ record.timestamp[3] }}:{{ record.timestamp[4] }}:{{ record.timestamp[5] }}
+          </span>
+        </p>
+      </div>
+    </mat-card>
+    <button class="return-button" (click)="returnToDeliveries()">Return Home</button>
+  </div>
+</div>

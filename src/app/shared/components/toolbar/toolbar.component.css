@@ -1,0 +1,139 @@
+/* toolbar.component.css */
+
+.toolbar {
+  width: 100%;
+  height: 56px;
+  background-color: #88C01B; /* Color naranja */
+  color: white;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.app-logo {
+  width: 40px;            /* Tamaño del logo */
+  /*height: 30px;            Tamaño del logo */
+  height: auto;
+  margin-right: 10px;     /* Espacio entre el logo y el texto */
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 1em;
+  margin-right: 20px;
+}
+
+.log-out {
+  background-color: #000;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+}
+
+.log-out:hover {
+  background-color: #333;
+}
+
+.active-link {
+  font-weight: bold;
+  border-bottom: 2px solid white;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 600px) {
+  .toolbar {
+    flex-direction: column;
+    padding: 10px 20px;
+    height: auto;
+  }
+
+  .menu-icon {
+    padding: 10px 0;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  nav a {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
+.toolbar-bell {
+  position: relative;
+  margin-left: 16px;
+}
+.bell-badge {
+  background: #d4f365;
+  color: #364217;
+  font-size: 0.95em;
+  border-radius: 50%;
+  padding: 3px 7px;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px #0002;
+  z-index: 10;
+}
+
+.notifications-popup-green {
+  position: absolute;
+  top: 60px;
+  right: 38px;
+  width: 395px;
+  max-width: 95vw;
+  background: #283019;
+  border-radius: 20px;
+  box-shadow: 0 6px 32px #0005;
+  z-index: 1600;
+  padding: 0 0 18px 0;
+  animation: slideDownNotif 0.28s cubic-bezier(0.52, 1.28, 0.29, 1) both;
+  border: 2px solid #d4f36533;
+}
+@keyframes slideDownNotif {
+  from { transform: translateY(-30px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+.notif-popup-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 8px 16px;
+  font-size: 1.18em;
+  font-weight: bold;
+  color: #d4f365;
+  border-bottom: 1.5px solid #364217;
+  position: relative;
+  border-radius: 18px 18px 0 0;
+}
+.notif-bell-green {
+  color: #d4f365;
+  font-size: 24px !important;
+}
+.notif-close-btn {
+  position: absolute !important;
+  right: 8px;
+  top: 8px;
+  color: #fff !important;
+  background: #45521d !important;
+  border-radius: 6px !important;
+  width: 32px !important;
+  height: 32px !important;
+  box-shadow: none !important;
+}

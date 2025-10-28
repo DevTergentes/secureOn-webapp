@@ -1,0 +1,29 @@
+<div class="notifications-popup-green animate-in">
+  <div class="notif-popup-header">
+    <i class="fa-solid fa-bell" style="color: #ffffff;"></i>
+    Notifications
+    <button mat-icon-button class="notif-close-btn" (click)="closePopup()">
+      <i class="fa-solid fa-circle-xmark"></i>
+    </button>
+  </div>
+
+  <!-- LISTA SCROLL -->
+  <div class="notif-toast-list-green">
+    <!-- SOLO LOS 6 ÚLTIMOS -->
+    <div class="notif-toast-green" *ngFor="let n of notifications.slice(-6)">
+      <i class="fa-solid fa-circle-exclamation" style="color: #ffffff;"></i>
+
+      <div class="notif-info-green">
+        <div class="notif-place-green">{{ n.incidentPlace }}</div>
+        <div class="notif-desc-green">
+          {{ n.description | slice:0:75 }}{{ n.description.length > 75 ? '…' : '' }}
+        </div>
+      </div>
+
+      <div class="notif-right-green">
+        <span class="notif-date-badge-green">{{ n.date }}</span>
+        <button mat-stroked-button class="notif-btn-green" (click)="closePopup()">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>

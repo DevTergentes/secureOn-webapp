@@ -1,0 +1,45 @@
+<div class="deliveries">
+  <div class="deliveries-container">
+    <div class="header">
+      <h1>Delivers</h1>
+      <div class="search-bar">
+        <input type="text" placeholder="Search" [(ngModel)]="searchText"
+               (input)="filterDeliveries()" />
+        <button mat-icon-button class="search-button">
+          <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+        </button>
+      </div>
+    </div>
+
+    <h2 class="sub-title">Delivery Trips</h2>
+
+    <div class="deliveries-list">
+      <div class="delivery-card" *ngFor="let delivery of filteredDeliveries">
+        <div class="card-content">
+          <div>
+            <h3 class="destination">{{ delivery.destination }}</h3>
+            <p class="description">{{ delivery.packageDescription }}</p>
+          </div>
+          <img
+            src="https://github.com/user-attachments/assets/63ca6961-f592-49cd-a7d1-0a646b71ae12"
+            alt="Delivery Icon"
+            class="delivery-icon"
+          />
+        </div>
+        <div class="button-group">
+          <button class="details-button" *ngIf="delivery.state === 'IN_PROGRESS'" (click)="onDetails(delivery)">Details</button>
+<!--          <button class="accept-button" *ngIf="delivery.state === 'PENDING'" (click)="onAccept(delivery)">Accept</button>-->
+          <button class="report-button" *ngIf="delivery.state === 'COMPLETED'" (click)="onReport(delivery)">Report</button>
+<!--          <button class="delete-button" (click)="onDelete(delivery)">Delete</button>-->
+<!--          Descomentar la siguiente línea si se desea mostrar el botones según el tipo de usuario-->
+          <button class="accept-button" *ngIf="delivery.state === 'PENDING' && userRole !== 'COMPANY'" (click)="onAccept(delivery)">Accept</button>
+          <button class="delete-button" *ngIf="delivery.state === 'PENDING' && userRole !== 'EMPLOYEE'" (click)="onDelete(delivery, userId)">Delete</button>
+        </div>
+      </div>
+      <!-- Botón para abrir el diálogo de nuevo delivery -->
+      <button class="add-delivery-button" [routerLink]="['/deliveries/add']">Add new delivery</button>
+    </div>
+
+    <p class="no-more-trips" *ngIf="deliveries.length === 0">No hay más viajes por mostrar</p>
+  </div>
+</div>

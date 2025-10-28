@@ -1,0 +1,20 @@
+<div class="add-service-page-container">
+  <div class="add-service-card">
+    <h1 class="title">Add the service</h1>
+    <form (ngSubmit)="onSave()" autocomplete="off">
+      <div class="form-group">
+        <input class="input" [(ngModel)]="service.nameService" name="name" placeholder="Name" required />
+      </div>
+      <div class="form-group">
+        <input class="input" [(ngModel)]="service.description" name="description" placeholder="Description" required />
+      </div>
+      <div class="form-group">
+        <input class="input" [(ngModel)]="service.incidents" name="incident" placeholder="Incident" required />
+      </div>
+      <div class="button-row">
+        <button type="button" class="cancel-btn" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="save-btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

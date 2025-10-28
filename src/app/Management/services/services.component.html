@@ -1,0 +1,56 @@
+<div class="services-container">
+  <div class="header">
+    <h1>Services</h1>
+    <mat-card class="search-card">
+      <div class="search-container">
+        <input matInput placeholder="Search for a service..." [(ngModel)]="searchText"
+               (input)="filterServices()" />
+        <button mat-icon-button class="search-button">
+          <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="services-list">
+    <mat-card class="service-card" *ngFor="let service of filteredServices">
+      <!-- Imagen de placeholder en la parte superior de la tarjeta -->
+      <img src="https://github.com/user-attachments/assets/55d61ddc-fdb7-45a4-bcc2-70b49d96120c" alt="Service Placeholder" class="placeholder-image" />
+
+      <div class="service-header">
+        <h3>{{ service.nameService }}</h3>
+
+        <!-- Mostrar imagen de estado según el valor de 'incidents' -->
+        <img
+          *ngIf="service.incidents === 'No One'"
+          src="https://github.com/user-attachments/assets/77246d52-ffaa-4ea3-a418-f240c3a6ca7b"
+          alt="Safe"
+          class="status-icon"
+        />
+        <img
+          *ngIf="service.incidents !== 'No One'"
+          src="https://github.com/user-attachments/assets/c11b2525-4dca-407f-b60b-f1caeb640971"
+          alt="Warning"
+          class="status-icon"
+        />
+      </div>
+
+      <div class="service-body">
+        <p>{{ service.description }}</p>
+        <p
+          class="incident-info"
+          [ngClass]="{
+            'safe-text': service.incidents === 'No One',
+            'warning-text': service.incidents === 'Gas Leak',
+            'alert-text': service.incidents === 'High Temperature'
+          }"
+        >
+          Incidents: <span>{{ service.incidents }}</span>
+        </p>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Botón flotante -->
+  <button class="add-service-button" (click)="navigateToAddService()">Add new service</button>
+</div>

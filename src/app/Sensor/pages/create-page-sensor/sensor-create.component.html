@@ -1,0 +1,27 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2 class="auth-title">Devices</h2>
+    <button class="auth-button" (click)="onAddDeviceClick()">Agregar un Device</button>
+
+    <form *ngIf="showForm" (ngSubmit)="addSensor()">
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="deviceName"
+          name="deviceName"
+          placeholder="Nombre del Device"
+          required
+          class="auth-input"
+        />
+      </div>
+      <button class="auth-button" type="submit" style="margin-top:0;">Agregar</button>
+    </form>
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+    <div class="success" *ngIf="success" style="color: #88C01B;">{{ success }}</div>
+
+    <div *ngIf="createdDevice" style="margin-top:20px; color: #333;">
+      <strong>Device creado:</strong> {{ createdDevice }}
+    </div>
+  </div>
+</div>

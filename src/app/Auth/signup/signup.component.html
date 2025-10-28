@@ -1,0 +1,65 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2 class="auth-title">Sign Up</h2>
+    <form (ngSubmit)="onSignup()">
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Username"
+          required
+          class="auth-input"
+        />
+      </div>
+      <div class="form-group">
+        <input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Email"
+          required
+          class="auth-input"
+        />
+      </div>
+      <div class="form-group">
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Password"
+          required
+          class="auth-input"
+        />
+      </div>
+      <div class="form-group">
+        <select
+          [(ngModel)]="role"
+          name="role"
+          required
+          class="auth-input"
+        >
+          <option value="COMPANY">Company</option>
+          <option value="EMPLOYEE">Employee</option>
+        </select>
+      </div>
+      <!-- Mostrar campo Full Name solo si el rol es EMPLOYEE -->
+      <div class="form-group" *ngIf="role === 'EMPLOYEE'">
+        <input
+          type="text"
+          [(ngModel)]="fullName"
+          name="fullName"
+          placeholder="Full Name"
+          required
+          class="auth-input"
+        />
+      </div>
+      <div class="error" *ngIf="error">{{ error }}</div>
+      <button class="auth-button" type="submit">Register</button>
+      <p class="link">
+        Already have an account?
+        <a routerLink="/login">Sign In</a>
+      </p>
+    </form>
+  </div>
+</div>

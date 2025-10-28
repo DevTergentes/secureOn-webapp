@@ -1,0 +1,14 @@
+<div class="users">
+  <div class="users-container">
+    <h1>Employees</h1>
+    <div *ngIf="users.length === 0" class="no-users">
+      <p>No users available</p>
+    </div>
+    <div class="users-list" *ngIf="users.length > 0">
+      <mat-card class="user-card" *ngFor="let user of users">
+        <h3>{{ user.username }}</h3>
+        <p>Email: {{ user.email }}</p>
+      </mat-card>
+    </div>
+  </div>
+</div>

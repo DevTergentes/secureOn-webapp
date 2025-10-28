@@ -1,0 +1,39 @@
+<mat-toolbar color="primary" class="toolbar">
+  <span class="logo">
+    <img src="https://i.imgur.com/oiYhULk.png" alt="Logo" class="app-logo"/>
+    secureon
+  </span>
+
+  <span class="spacer"></span>
+
+  <i *ngIf="showMenuIcon"
+     class="menu-icon fa-solid fa-bars"
+     style="color:#fff;"
+     (click)="toggleMenu()"></i>
+
+  <nav *ngIf="!showMenuIcon || isMenuOpen">
+    <a mat-button routerLink="/deliveries" routerLinkActive="active-link">Deliveries</a>
+    <a mat-button routerLink="/incidents"  routerLinkActive="active-link">Incidents</a>
+    <a *ngIf="userRole === 'COMPANY'" mat-button routerLink="/employees" routerLinkActive="active-link">Employees</a>
+    <a *ngIf="userRole === 'EMPLOYEE'"  mat-button routerLink="sensors/create" routerLinkActive="active-link">Sensor</a>
+
+    <a *ngIf="showLogOutButton"
+       mat-button
+       class="log-out"
+       (click)="logOut()">Log Out</a>
+  </nav>
+
+  <!-- campana -->
+  <button mat-icon-button class="toolbar-bell" (click)="onBellClick()">
+    <i class="fa-solid fa-bell" style="color: #ffffff;"></i>
+    <span *ngIf="notifications.length"
+          class="bell-badge">{{ notifications.length }}</span>
+  </button>
+</mat-toolbar>
+
+<!-- Popup (hijo) -->
+<app-notificaciones-popup
+  *ngIf="showNotifications"
+  [notifications]="notifications"
+  (close)="showNotifications = false">
+</app-notificaciones-popup>
