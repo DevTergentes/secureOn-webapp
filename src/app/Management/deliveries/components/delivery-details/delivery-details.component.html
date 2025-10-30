@@ -49,14 +49,13 @@
           <p>Temperatura: {{ latestRecordBeeceptor.temperatureValue }} °C</p>
           <p>
             Fecha:
-            {{ latestRecordBeeceptor.timestamp[2] }}/{{ latestRecordBeeceptor.timestamp[1] }}/{{ latestRecordBeeceptor.timestamp[0] }}
-            {{ latestRecordBeeceptor.timestamp[3] }}:{{ latestRecordBeeceptor.timestamp[4] }}
+            {{ latestRecordBeeceptor.timestamp | date:'dd/MM/yyyy HH:mm' }}
           </p>
         </ng-container>
       </div>
 
       <!-- Tabla de últimos records -->
-      <div *ngIf="records && records.length > 0" class="records-table-container">
+      <div *ngIf="recordsBeeceptor && recordsBeeceptor.length > 0" class="records-table-container">
         <h4>Historial de registros recientes</h4>
         <table class="records-table">
           <thead>
@@ -68,10 +67,9 @@
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let r of records.slice(-5)">
+          <tr *ngFor="let r of recordsBeeceptor.slice(-5)">
             <td>
-              {{ r.timestamp[2] }}/{{ r.timestamp[1] }}/{{ r.timestamp[0] }}
-              {{ r.timestamp[3] }}:{{ r.timestamp[4] }}
+              {{ latestRecordBeeceptor.timestamp | date:'dd/MM/yyyy HH:mm' }}
             </td>
             <td>{{ r.gasValue }}</td>
             <td>{{ r.temperatureValue }}</td>

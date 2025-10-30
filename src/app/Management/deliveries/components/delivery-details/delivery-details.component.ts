@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatCard } from '@angular/material/card';
-import { NgIf, NgForOf, NgClass } from '@angular/common'; // <-- ¡Importa NgForOf y NgClass aquí!
+import {NgIf, NgForOf, NgClass, DatePipe} from '@angular/common'; // <-- ¡Importa NgForOf y NgClass aquí!
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseService } from '../../../../shared/services/base.service';
 import { Delivery } from '../../model/delivery';
@@ -17,7 +17,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
     NgForOf,   // <-- agrega esto
     NgClass,   // <-- y esto
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    DatePipe
   ],
   templateUrl: './delivery-details.component.html',
   styleUrl: './delivery-details.component.css'
@@ -58,24 +59,11 @@ export class DeliveryDetailsComponent implements OnInit {
     });
   }
 
-  private parseTimestamp(ts: number): number[] {
-    const date = new Date(ts * 1000); // Multiplica por 1000 si está en segundos
-    return [
-      date.getFullYear(),
-      date.getMonth() + 1,
-      date.getDate(),
-      date.getHours(),
-      date.getMinutes()
-    ];
-  }
-
   loadRecordsFromBeeceptor(): void {
     this.baseService.getRecordsFromBeeceptor().subscribe(
       (data) => {
-        this.recordsBeeceptor = data.map(r => ({
-          ...r,
-          timestamp: this.parseTimestamp(r.timestamp)
-        }));
+        this.recordsBeeceptor = data;
+        console.log('Records desde Beeceptor:', this.recordsBeeceptor);
       },
       (error) => {
         console.error('Error al cargar records desde Beeceptor:', error);
@@ -123,9 +111,8 @@ export class DeliveryDetailsComponent implements OnInit {
     this.baseService.getRecordsFromBeeceptor().subscribe(
       (data) => {
         if (data && data.length > 0) {
-          const last = data[data.length - 1];
-          last.timestamp = this.parseTimestamp(last.timestamp);
-          this.latestRecordBeeceptor = last;
+          this.latestRecordBeeceptor = data[data.length - 1];
+          console.log('Último record desde Beeceptor:', this.latestRecordBeeceptor);
         } else {
           this.latestRecordBeeceptor = null;
         }

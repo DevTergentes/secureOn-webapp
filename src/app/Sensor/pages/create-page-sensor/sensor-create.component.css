@@ -21,7 +21,7 @@
 
 .auth-title {
   font-size: 2em;
-  color: #88C01B;
+  color: #74C04A;
   font-weight: bold;
   margin-bottom: 12px;
 }
@@ -43,13 +43,13 @@
 
 .auth-input:focus {
   outline: none;
-  border: 1.5px solid #88C01B;
+  border: 1.5px solid #74C04A;
 }
 
 .auth-button {
   width: 100%;
   padding: 12px 0;
-  background: #88C01B;
+  background: #74C04A;
   color: white;
   font-size: 1.2em;
   font-weight: bold;
@@ -70,7 +70,7 @@
 }
 
 .link a {
-  color: #88C01B;
+  color: #74C04A;
   text-decoration: none;
   font-weight: bold;
 }
