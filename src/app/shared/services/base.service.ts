@@ -114,6 +114,10 @@ export class BaseService {
     return this.http.get<any[]>(`http://localhost:8080/records/delivery/${deliveryId}`);
   }
 
+  getRecordsFromBeeceptor(): Observable<any[]> {
+    return this.http.get<any[]>('https://secureon.free.beeceptor.com/api/v1/sensors-data');
+  }
+
   deleteDelivery(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/deliveries/${id}`);
   }

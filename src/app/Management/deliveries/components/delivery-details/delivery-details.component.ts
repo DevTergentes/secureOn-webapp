@@ -27,7 +27,9 @@ export class DeliveryDetailsComponent implements OnInit {
   deliveryId: string | null = null;
   device: Device | null = null;
   latestRecord: any = null;
+  latestRecordBeeceptor: any = null;
   records: any[] = [];
+  recordsBeeceptor: any[] = [];
 
   constructor(
     private baseService: BaseService,
@@ -42,8 +44,10 @@ export class DeliveryDetailsComponent implements OnInit {
     if (this.deliveryId) {
       this.loadServices(this.deliveryId);
       this.loadSensorByDeliveryId(this.deliveryId);
-      this.loadLatestRecord(this.deliveryId);
-      this.loadRecordsByDeliveryId(this.deliveryId);
+      /*this.loadLatestRecord(this.deliveryId);*/
+      this.loadLatestRecordFromBeeceptor();
+      this.loadRecordsFromBeeceptor();
+      /*this.loadRecordsByDeliveryId(this.deliveryId);*/
     }
   }
 
@@ -52,6 +56,31 @@ export class DeliveryDetailsComponent implements OnInit {
       this.delivery = data;
       console.log('Deliveries:', this.delivery);
     });
+  }
+
+  private parseTimestamp(ts: number): number[] {
+    const date = new Date(ts * 1000); // Multiplica por 1000 si está en segundos
+    return [
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes()
+    ];
+  }
+
+  loadRecordsFromBeeceptor(): void {
+    this.baseService.getRecordsFromBeeceptor().subscribe(
+      (data) => {
+        this.recordsBeeceptor = data.map(r => ({
+          ...r,
+          timestamp: this.parseTimestamp(r.timestamp)
+        }));
+      },
+      (error) => {
+        console.error('Error al cargar records desde Beeceptor:', error);
+      }
+    );
   }
 
   loadRecordsByDeliveryId(deliveryId: string): void {
@@ -86,6 +115,23 @@ export class DeliveryDetailsComponent implements OnInit {
       },
       (error) => {
         console.error('Error al cargar el último record:', error);
+      }
+    );
+  }
+
+  loadLatestRecordFromBeeceptor(): void {
+    this.baseService.getRecordsFromBeeceptor().subscribe(
+      (data) => {
+        if (data && data.length > 0) {
+          const last = data[data.length - 1];
+          last.timestamp = this.parseTimestamp(last.timestamp);
+          this.latestRecordBeeceptor = last;
+        } else {
+          this.latestRecordBeeceptor = null;
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el último record desde Beeceptor:', error);
       }
     );
   }

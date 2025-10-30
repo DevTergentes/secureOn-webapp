@@ -10,6 +10,7 @@ export class Delivery {
   employeeId: number;
   ownerId: number;
   state: string;
+  deviceId: string;
 
   constructor() {
     this.id = 0;
@@ -22,6 +23,7 @@ export class Delivery {
     this.employeeId = 0;
     this.ownerId = 0;
     this.state = '';
+    this.deviceId = '';
   }
 
 

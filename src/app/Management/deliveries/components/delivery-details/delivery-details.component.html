@@ -32,7 +32,7 @@
     </mat-card>
 
     <!-- Card 2: Sensor + Último Record + Tabla de records -->
-    <mat-card class="delivery-details-card" *ngIf="device || latestRecord">
+    <mat-card class="delivery-details-card" *ngIf="device || latestRecordBeeceptor">
       <div class="delivery-details-header">
         <h3>Sensor</h3>
         <p *ngIf="device">Id: {{ device.id }}</p>
@@ -43,14 +43,14 @@
           </span>
         </p>
         <h3 style="margin-top: 22px;">Último Record</h3>
-        <ng-container *ngIf="latestRecord">
-          <p>Gas: {{ latestRecord.gasValue }}</p>
-          <p>Ritmo cardiaco: {{ latestRecord.heartRateValue }}</p>
-          <p>Temperatura: {{ latestRecord.temperatureValue }} °C</p>
+        <ng-container *ngIf="latestRecordBeeceptor">
+          <p>Gas: {{ latestRecordBeeceptor.gasValue }}</p>
+          <p>Ritmo cardiaco: {{ latestRecordBeeceptor.heartRateValue }}</p>
+          <p>Temperatura: {{ latestRecordBeeceptor.temperatureValue }} °C</p>
           <p>
             Fecha:
-            {{ latestRecord.timestamp[2] }}/{{ latestRecord.timestamp[1] }}/{{ latestRecord.timestamp[0] }}
-            {{ latestRecord.timestamp[3] }}:{{ latestRecord.timestamp[4] }}
+            {{ latestRecordBeeceptor.timestamp[2] }}/{{ latestRecordBeeceptor.timestamp[1] }}/{{ latestRecordBeeceptor.timestamp[0] }}
+            {{ latestRecordBeeceptor.timestamp[3] }}:{{ latestRecordBeeceptor.timestamp[4] }}
           </p>
         </ng-container>
       </div>
@@ -84,9 +84,9 @@
   </div>
 
   <!-- Mapa centrado y ancho -->
-  <div class="delivery-details-map-container" *ngIf="latestRecord?.latitude && latestRecord?.longitude">
+  <div class="delivery-details-map-container" *ngIf="latestRecordBeeceptor?.latitude && latestRecordBeeceptor?.longitude">
     <iframe
-      [src]="getMapUrl(latestRecord.latitude, latestRecord.longitude)"
+      [src]="getMapUrl(latestRecordBeeceptor.latitude, latestRecordBeeceptor.longitude)"
       allowfullscreen
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade"
