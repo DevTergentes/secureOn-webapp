@@ -1,13 +1,25 @@
 .footer {
   width: 100%;
-  padding: 15px 0;
-  background-color: #74C04A;
-  color: white;
+  padding: 20px 0;
+  background: linear-gradient(135deg, #183856, #444444);
+  color: #FFFFFF;
   text-align: center;
   font-size: 0.9em;
   position: fixed;
   bottom: 0;
   left: 0;
-  font-weight: bold;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  box-shadow: 0 -4px 20px rgba(24, 56, 86, 0.3);
+  border-top: 3px solid #74c04a;
+  z-index: 1000;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #74c04a, transparent);
 }

@@ -1,65 +1,89 @@
 <div class="auth-wrapper">
-  <div class="auth-card">
-    <h2 class="auth-title">Sign Up</h2>
-    <form (ngSubmit)="onSignup()">
-      <div class="form-group">
-        <input
-          type="text"
-          [(ngModel)]="username"
-          name="username"
-          placeholder="Username"
-          required
-          class="auth-input"
-        />
+  <!-- Partículas animadas de fondo -->
+  <div class="particles-bg">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  
+  <div class="auth-container">
+    <!-- Sección de imagen -->
+    <div class="image-section">
+      <img src="/transporte-de-materiales-peligrosos-Lisam-Systems-1024x683.png" alt="SecureOn Security" class="auth-image">
+      <div class="image-overlay">
+        <h1 class="brand-title">SecureOn</h1>
+        <p class="brand-subtitle">Únete a nuestra plataforma de seguridad</p>
       </div>
-      <div class="form-group">
-        <input
-          type="email"
-          [(ngModel)]="email"
-          name="email"
-          placeholder="Email"
-          required
-          class="auth-input"
-        />
+    </div>
+    
+    <!-- Sección del formulario -->
+    <div class="form-section">
+      <div class="auth-card">
+        <h2 class="auth-title">Registrarse</h2>
+        <form (ngSubmit)="onSignup()">
+          <div class="form-group">
+            <input
+              type="text"
+              [(ngModel)]="username"
+              name="username"
+              placeholder="Nombre de usuario"
+              required
+              class="auth-input"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="Correo electrónico"
+              required
+              class="auth-input"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Contraseña"
+              required
+              class="auth-input"
+            />
+          </div>
+          <div class="form-group">
+            <select
+              [(ngModel)]="role"
+              name="role"
+              required
+              class="auth-input"
+            >
+              <option value="COMPANY">Empresa</option>
+              <option value="EMPLOYEE">Empleado</option>
+            </select>
+          </div>
+          <!-- Mostrar campo Full Name solo si el rol es EMPLOYEE -->
+          <div class="form-group" *ngIf="role === 'EMPLOYEE'">
+            <input
+              type="text"
+              [(ngModel)]="fullName"
+              name="fullName"
+              placeholder="Nombre completo"
+              required
+              class="auth-input"
+            />
+          </div>
+          <div class="error" *ngIf="error">{{ error }}</div>
+          <button class="auth-button" type="submit">Registrarse</button>
+          <p class="link">
+            ¿Ya tienes una cuenta?
+            <a routerLink="/login">Iniciar Sesión</a>
+          </p>
+        </form>
       </div>
-      <div class="form-group">
-        <input
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="Password"
-          required
-          class="auth-input"
-        />
-      </div>
-      <div class="form-group">
-        <select
-          [(ngModel)]="role"
-          name="role"
-          required
-          class="auth-input"
-        >
-          <option value="COMPANY">Company</option>
-          <option value="EMPLOYEE">Employee</option>
-        </select>
-      </div>
-      <!-- Mostrar campo Full Name solo si el rol es EMPLOYEE -->
-      <div class="form-group" *ngIf="role === 'EMPLOYEE'">
-        <input
-          type="text"
-          [(ngModel)]="fullName"
-          name="fullName"
-          placeholder="Full Name"
-          required
-          class="auth-input"
-        />
-      </div>
-      <div class="error" *ngIf="error">{{ error }}</div>
-      <button class="auth-button" type="submit">Register</button>
-      <p class="link">
-        Already have an account?
-        <a routerLink="/login">Sign In</a>
-      </p>
-    </form>
+    </div>
   </div>
 </div>

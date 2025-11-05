@@ -7,6 +7,7 @@ import { MatButtonModule  } from '@angular/material/button';
 import { MatIconModule    } from '@angular/material/icon';
 
 import { BaseService }     from '../../services/base.service';
+import { AuthService }     from '../../../Auth/services/auth.service';
 import {NotificacionesPopupComponent} from '../../../notifications/components/notificaciones-popup.component';
 
 @Component({
@@ -35,7 +36,8 @@ export class ToolbarComponent {
   notifications: any[] = [];
 
   constructor(private router: Router,
-              private baseService: BaseService) {
+              private baseService: BaseService,
+              private authService: AuthService) {
     const userString = localStorage.getItem('user');
     if (userString) {
       const user = JSON.parse(userString);
@@ -52,7 +54,10 @@ export class ToolbarComponent {
   @HostListener('window:resize')
   onResize() { this.showMenuIcon = window.innerWidth <= 600; }
 
-  logOut()   { this.router.navigate(['/login']); }
+  logOut()   { 
+    this.authService.logout();
+    this.router.navigate(['/login']); 
+  }
 
   /* ------------ campana ------------ */
   onBellClick(): void {

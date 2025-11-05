@@ -1,33 +1,57 @@
 <div class="auth-wrapper">
-  <div class="auth-card">
-    <h2 class="auth-title">Sign In</h2>
-    <form (ngSubmit)="onLogin()">
-      <div class="form-group">
-        <input
-          type="text"
-          [(ngModel)]="username"
-          name="username"
-          placeholder="Username"
-          required
-          class="auth-input"
-        />
+  <!-- Partículas animadas de fondo -->
+  <div class="particles-bg">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  
+  <div class="auth-container">
+    <!-- Sección de imagen -->
+    <div class="image-section">
+      <img src="/tanque-cisterna-glp.jpg" alt="SecureOn Security" class="auth-image">
+      <div class="image-overlay">
+        <h1 class="brand-title">SecureOn</h1>
+        <p class="brand-subtitle">Protege lo que más importa</p>
       </div>
-      <div class="form-group">
-        <input
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="Password"
-          required
-          class="auth-input"
-        />
+    </div>
+    
+    <!-- Sección del formulario -->
+    <div class="form-section">
+      <div class="auth-card">
+        <h2 class="auth-title">Iniciar Sesión</h2>
+        <form (ngSubmit)="onLogin()">
+          <div class="form-group">
+            <input
+              type="text"
+              [(ngModel)]="username"
+              name="username"
+              placeholder="Nombre de usuario"
+              required
+              class="auth-input"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Contraseña"
+              required
+              class="auth-input"
+            />
+          </div>
+          <div class="error" *ngIf="error">{{ error }}</div>
+          <button class="auth-button" type="submit">Iniciar Sesión</button>
+          <p class="link">
+            ¿No tienes una cuenta?
+            <a routerLink="/signup">Registrarse</a>
+          </p>
+        </form>
       </div>
-      <div class="error" *ngIf="error">{{ error }}</div>
-      <button class="auth-button" type="submit">Sign In</button>
-      <p class="link">
-        Don't have an account?
-        <a routerLink="/signup">Sign Up</a>
-      </p>
-    </form>
+    </div>
   </div>
 </div>
