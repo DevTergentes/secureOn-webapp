@@ -1,11 +1,12 @@
-<!-- src/app/components/incidents/incidents.component.html -->
+<!-- Vista de Incidentes Rediseñada -->
 <div class="incidents-container">
   <div class="header">
-    <h1>Incidents</h1>
+    <h1>Monitor de Incidentes</h1>
   </div>
+  
   <mat-card class="search-card">
     <div class="search-container">
-      <input matInput placeholder="Search for incidents..." [(ngModel)]="searchText"
+      <input matInput placeholder="Buscar por destino o descripción..." [(ngModel)]="searchText"
              (input)="filterIncidents()" />
       <button mat-icon-button class="search-button">
         <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
@@ -13,23 +14,261 @@
     </div>
   </mat-card>
 
-  <div class="incidents-list">
-    <mat-card class="incident-card" *ngFor="let incident of filteredIncidents">
-      <div class="incident-info">
-        <img
-          src="https://github.com/user-attachments/assets/3d710fe1-ae8d-4760-b80f-d217acd4c24c"
-          alt="Incident Icon"
-          class="incident-icon"
-        />
-
-        <div>
-          <h3>{{ incident.incidentPlace }}</h3>
-          <p class="description-title">Description:</p>
-          <p class="description" [innerText]="incident.description"></p>
-        </div>
-        <span class="date">{{ incident.date }}</span>
-      </div>
-    </mat-card>
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-icon class="spinning">refresh</mat-icon>
+    <p>Cargando incidentes...</p>
   </div>
-<!--  <button class="floating-button" [routerLink]="['/add-incident']">Add new incident</button>-->
+
+  <!-- Lista de Deliveries con sus Incidentes -->
+  <div class="deliveries-list" *ngIf="!loading">
+    <mat-expansion-panel 
+      class="delivery-panel" 
+      *ngFor="let item of deliveriesWithIncidents">
+      
+      <!-- Header del Panel -->
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="delivery-header">
+            <div class="delivery-info">
+              <h3>{{item.delivery.destination}}</h3>
+              <p class="delivery-description">{{item.delivery.packageDescription}}</p>
+              <span class="delivery-state" [class]="'state-' + item.delivery.state.toLowerCase()">
+                {{item.delivery.state}}
+              </span>
+            </div>
+            <div class="incidents-summary">
+              <mat-chip-set>
+                <mat-chip *ngIf="item.automaticIncidents.length > 0" 
+                         class="chip-automatic">
+                  <mat-icon>sensors</mat-icon>
+                  {{item.automaticIncidents.length}} Automático(s)
+                </mat-chip>
+                <mat-chip *ngIf="item.manualIncidents.length > 0" 
+                         class="chip-manual">
+                  <mat-icon>person</mat-icon>
+                  {{item.manualIncidents.length}} Manual(es)
+                </mat-chip>
+                <mat-chip *ngIf="item.totalIncidents === 0" 
+                         class="chip-safe">
+                  <mat-icon>check_circle</mat-icon>
+                  Sin incidentes
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <!-- Contenido del Panel -->
+      <div class="panel-content">
+        
+        <!-- Incidentes Automáticos (Sensores) -->
+        <div class="incidents-section" *ngIf="item.automaticIncidents.length > 0">
+          <h4><mat-icon>sensors</mat-icon> Incidentes Detectados por Sensores</h4>
+          <div class="incidents-grid">
+            <mat-card 
+              class="incident-card automatic" 
+              *ngFor="let incident of item.automaticIncidents"
+              [class]="getSeverityClass(incident.severity)">
+              <mat-card-header>
+                <mat-icon mat-card-avatar [color]="incident.severity === 'CRITICAL' ? 'warn' : 'primary'">
+                  {{getSensorIcon(incident.source)}}
+                </mat-icon>
+                <mat-card-title>
+                  {{incident.source === 'GAS' ? 'Gas' : incident.source === 'TEMPERATURE' ? 'Temperatura' : 'Ritmo Cardíaco'}} 
+                  - {{incident.severity}}
+                </mat-card-title>
+                <mat-card-subtitle>{{formatDate(incident.timestamp)}}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="incident-message">{{incident.message}}</p>
+                <div class="incident-details">
+                  <span><strong>Valor actual:</strong> 
+                    {{incident.value}}{{incident.source === 'GAS' ? ' ppm' : incident.source === 'TEMPERATURE' ? ' °C' : ' BPM'}}
+                  </span>
+                  <span><strong>Umbral superado:</strong> 
+                    {{incident.threshold}}{{incident.source === 'GAS' ? ' ppm' : incident.source === 'TEMPERATURE' ? ' °C' : ' BPM'}}
+                  </span>
+                  <span><strong>Sensor ID:</strong> {{incident.sensorId}}</span>
+                  <span class="severity-badge" [class]="getSeverityClass(incident.severity)">
+                    {{incident.severity}}
+                  </span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Incidentes Manuales -->
+        <div class="incidents-section" *ngIf="item.manualIncidents.length > 0">
+          <h4><mat-icon>person</mat-icon> Incidentes Reportados por Conductor</h4>
+          <div class="incidents-grid">
+            <mat-card 
+              class="incident-card manual" 
+              *ngFor="let incident of item.manualIncidents">
+              <mat-card-header>
+                <mat-icon mat-card-avatar color="accent">report</mat-icon>
+                <mat-card-title>{{incident.incidentPlace}}</mat-card-title>
+                <mat-card-subtitle>{{formatDate(incident.date)}}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="incident-description">{{incident.description}}</p>
+                <div class="incident-details">
+                  <span><strong>Servicio ID:</strong> {{incident.serviceId}}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Información del Sensor -->
+        <div class="sensor-info-section" *ngIf="item.sensors.length > 0 || item.latestRecords.length > 0">
+          <h4><mat-icon>sensors</mat-icon> Información del Sensor</h4>
+          
+          <!-- Estado del Sensor -->
+          <mat-card class="sensor-status-card" *ngFor="let sensor of item.sensors">
+            <mat-card-header>
+              <mat-icon mat-card-avatar [color]="sensor.safe ? 'primary' : 'warn'">
+                {{sensor.safe ? 'check_circle' : 'warning'}}
+              </mat-icon>
+              <mat-card-title>Sensor {{sensor.id}}</mat-card-title>
+              <mat-card-subtitle>Estado: {{sensor.safe ? 'Seguro' : 'Alerta'}}</mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+
+          <!-- Último Record -->
+          <mat-card class="latest-record-card" *ngIf="item.latestRecords.length > 0">
+            <mat-card-header>
+              <mat-icon mat-card-avatar color="accent">schedule</mat-icon>
+              <mat-card-title>Último Record</mat-card-title>
+              <mat-card-subtitle>{{formatDate(item.latestRecords[item.latestRecords.length - 1]?.timestamp)}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="sensor-readings" *ngIf="item.latestRecords.length > 0">
+                <div class="reading-item">
+                  <mat-icon color="warn">warning</mat-icon>
+                  <span class="reading-label">Gas:</span>
+                  <span class="reading-value">{{item.latestRecords[item.latestRecords.length - 1]?.gasValue}} ppm</span>
+                  <span class="reading-status" [class]="getGasStatusClass(item.latestRecords[item.latestRecords.length - 1]?.gasValue)">
+                    {{getGasStatus(item.latestRecords[item.latestRecords.length - 1]?.gasValue)}}
+                  </span>
+                </div>
+                <div class="reading-item">
+                  <mat-icon color="primary">thermostat</mat-icon>
+                  <span class="reading-label">Temperatura:</span>
+                  <span class="reading-value">{{item.latestRecords[item.latestRecords.length - 1]?.temperatureValue}} °C</span>
+                  <span class="reading-status" [class]="getTemperatureStatusClass(item.latestRecords[item.latestRecords.length - 1]?.temperatureValue)">
+                    {{getTemperatureStatus(item.latestRecords[item.latestRecords.length - 1]?.temperatureValue)}}
+                  </span>
+                </div>
+                <div class="reading-item">
+                  <mat-icon color="accent">favorite</mat-icon>
+                  <span class="reading-label">Ritmo cardíaco:</span>
+                  <span class="reading-value">{{item.latestRecords[item.latestRecords.length - 1]?.heartRateValue}} BPM</span>
+                  <span class="reading-status" [class]="getHeartRateStatusClass(item.latestRecords[item.latestRecords.length - 1]?.heartRateValue)">
+                    {{getHeartRateStatus(item.latestRecords[item.latestRecords.length - 1]?.heartRateValue)}}
+                  </span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Umbrales de Advertencia -->
+          <mat-card class="thresholds-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar color="warn">rule</mat-icon>
+              <mat-card-title>Umbrales de Seguridad</mat-card-title>
+              <mat-card-subtitle>Límites que no deben superarse</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="thresholds-grid">
+                <div class="threshold-item">
+                  <h5><mat-icon>warning</mat-icon> Gas (ppm)</h5>
+                  <div class="threshold-levels">
+                    <span class="level warning">⚠️ Advertencia: ≥40</span>
+                    <span class="level danger">🔶 Peligro: ≥60</span>
+                    <span class="level critical">🔴 Crítico: ≥80</span>
+                  </div>
+                </div>
+                <div class="threshold-item">
+                  <h5><mat-icon>thermostat</mat-icon> Temperatura (°C)</h5>
+                  <div class="threshold-levels">
+                    <span class="level warning">❄️ Frío: ≤5°C</span>
+                    <span class="level warning">⚠️ Calor: ≥35°C</span>
+                    <span class="level danger">🔶 Peligro: ≤0°C o ≥40°C</span>
+                    <span class="level critical">🔴 Crítico: ≥45°C</span>
+                  </div>
+                </div>
+                <div class="threshold-item">
+                  <h5><mat-icon>favorite</mat-icon> Ritmo Cardíaco (BPM)</h5>
+                  <div class="threshold-levels">
+                    <span class="level warning">⚠️ Bajo: ≤50</span>
+                    <span class="level warning">⚠️ Alto: ≥120</span>
+                    <span class="level danger">🔶 Peligro: ≤40 o ≥140</span>
+                    <span class="level critical">🔴 Crítico: ≥160</span>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Historial de Registros Recientes -->
+          <mat-card class="recent-records-card" *ngIf="item.latestRecords.length > 1">
+            <mat-card-header>
+              <mat-icon mat-card-avatar color="primary">history</mat-icon>
+              <mat-card-title>Historial de Registros Recientes</mat-card-title>
+              <mat-card-subtitle>Últimas {{item.latestRecords.length}} lecturas</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="records-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Gas (ppm)</th>
+                      <th>Temp (°C)</th>
+                      <th>BPM</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let record of item.latestRecords">
+                      <td>{{formatDate(record.timestamp)}}</td>
+                      <td [class]="getGasStatusClass(record.gasValue)">{{record.gasValue}}</td>
+                      <td [class]="getTemperatureStatusClass(record.temperatureValue)">{{record.temperatureValue}}</td>
+                      <td [class]="getHeartRateStatusClass(record.heartRateValue)">{{record.heartRateValue}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Sin incidentes -->
+        <div class="no-incidents" *ngIf="item.totalIncidents === 0">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <h4>Sin incidentes reportados</h4>
+          <p>Este delivery no presenta incidentes automáticos ni manuales.</p>
+        </div>
+
+      </div>
+    </mat-expansion-panel>
+  </div>
+
+  <!-- Mensaje cuando no hay deliveries -->
+  <div class="no-data" *ngIf="!loading && deliveriesWithIncidents.length === 0">
+    <mat-icon>info</mat-icon>
+    <h3>No hay deliveries disponibles</h3>
+    <p *ngIf="isEmployee()">No tienes deliveries asignados.</p>
+    <p *ngIf="!isEmployee()">No hay deliveries registrados en el sistema.</p>
+  </div>
+
+  <!-- Botón flotante para agregar incidente - solo para empleados -->
+  <button *ngIf="isEmployee()" 
+          mat-fab 
+          class="floating-add-btn"
+          (click)="addIncident()">
+    <mat-icon>add</mat-icon>
+  </button>
 </div>

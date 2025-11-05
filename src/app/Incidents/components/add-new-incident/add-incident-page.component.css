@@ -1,40 +1,160 @@
-.add-incident-page-wrapper {
-  height: 100vh;
+.add-incident-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(116, 192, 74, 0.1), rgba(24, 56, 86, 0.1));
+}
+
+.incident-card {
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(24, 56, 86, 0.15);
+  border-radius: 16px;
+  background: white;
+}
+
+.incident-card mat-card-header {
+  background: linear-gradient(135deg, #183856, #2a5d8a);
+  color: white;
+  border-radius: 16px 16px 0 0;
+  margin: -24px -24px 24px -24px;
+  padding: 24px;
+}
+
+.incident-card mat-card-title {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #f5f5f5;
-  overflow-y: auto;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-.add-incident-card {
+.incident-card mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.incident-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.w-100 {
   width: 100%;
-  max-width: 340px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 6px 24px rgba(136,192,27,0.10);
-  padding: 22px 18px 18px 18px;
-  margin: 32px 0;
 }
 
-.title {
-  text-align: center;
-  margin-bottom: 12px;
-  color: #222;
-  font-size: 1.5em;
-  font-weight: 700;
+.delivery-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.delivery-option strong {
+  color: #183856;
+  font-weight: 600;
+}
+
+.delivery-option small {
+  color: #74c04a;
+  font-size: 0.85rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.button-group button {
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.form-group {
-  margin-bottom: 10px;
+.button-group button[type="submit"] {
+  background: linear-gradient(135deg, #74c04a, #5ea83a);
 }
 
-label {
-  display: block;
-  margin-bottom: 4px;
-  color: #222;
-  font-size: 0.97em;
+.button-group button[type="button"] {
+  color: #444444;
+  border: 2px solid #444444;
+}
+
+.button-group button[type="button"]:hover {
+  background: #444444;
+  color: white;
+}
+
+/* Personalización de campos */
+::ng-deep .mat-mdc-form-field-outline {
+  color: rgba(24, 56, 86, 0.3) !important;
+}
+
+::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: rgba(116, 192, 74, 0.12) !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline-thick {
+  color: #74c04a !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: #74c04a !important;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .add-incident-container {
+    padding: 10px;
+    min-height: 90vh;
+  }
+  
+  .incident-card {
+    margin: 0;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .button-group button {
+    width: 100%;
+  }
+}
+
+/* Personalización de Angular Material con la paleta de colores */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: #fafafa !important;
+}
+
+::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: rgba(116, 192, 74, 0.1) !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+  color: #74c04a !important;
+}
+
+::ng-deep .mat-mdc-outlined-form-field.mat-focused .mat-mdc-notched-outline {
+  border-color: #74c04a !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: #183856 !important;
 }
 
 .input {
@@ -55,15 +175,64 @@ label {
 
 .button-row {
   display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: 14px;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
 }
 
-.save-btn, .cancel-btn {
-  padding: 7px 18px;
-  font-size: 1em;
-  border-radius: 8px;
+/* Botones personalizados con la paleta de colores */
+::ng-deep .mat-mdc-raised-button.mat-primary {
+  background-color: #74c04a !important;
+  color: white !important;
+  border-radius: 10px !important;
+  padding: 12px 30px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-primary:hover {
+  background-color: #5ea836 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(116, 192, 74, 0.4) !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-warn {
+  background-color: #444444 !important;
+  color: white !important;
+  border-radius: 10px !important;
+  padding: 12px 30px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+::ng-deep .mat-mdc-raised-button.mat-warn:hover {
+  background-color: #333333 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(68, 68, 68, 0.4) !important;
+}
+
+::ng-deep .mat-mdc-raised-button:disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+}
+
+/* Tarjeta de advertencia */
+.warning-card {
+  background-color: #fff3cd !important;
+  border: 1px solid #ffc107 !important;
+  margin-bottom: 20px !important;
+}
+
+.warning-card mat-card-content {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  color: #856404 !important;
+  font-size: 0.9em !important;
+}
+
+.warning-card mat-icon {
+  color: #ffc107 !important;
 }
 
 .save-btn {
@@ -87,4 +256,60 @@ label {
 }
 .cancel-btn:hover {
   background: #bbbbbb;
+}
+
+/* Estilos para opciones de delivery mejoradas */
+.delivery-option {
+  padding: 8px 0;
+  width: 100%;
+}
+
+.delivery-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.delivery-main strong {
+  color: #183856;
+  font-size: 1em;
+}
+
+.delivery-state {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.state-pending { background: #fff3cd; color: #856404; }
+.state-accepted { background: #d1ecf1; color: #0c5460; }
+.state-in_progress { background: #d4edda; color: #155724; }
+.state-completed { background: #e2e3e5; color: #383d41; }
+
+.delivery-details {
+  color: #666;
+  margin: 2px 0;
+}
+
+.delivery-route {
+  color: #888;
+  font-style: italic;
+}
+
+.delivery-route small {
+  font-size: 0.8em;
+}
+
+/* Mejorar el ancho de las opciones del select */
+::ng-deep .mat-mdc-select-panel .mat-mdc-option {
+  min-height: 60px !important;
+  padding: 8px 16px !important;
+  line-height: 1.2 !important;
+}
+
+::ng-deep .mat-mdc-select-panel {
+  max-width: 600px !important;
 }
