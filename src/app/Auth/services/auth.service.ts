@@ -8,11 +8,31 @@ import { SignupRequest } from '../model/signup-request';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private API_URL = 'http://localhost:8080/api/v1/auth'; // <-- Cambiado a tu backend real
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false); // Inicializar como false siempre
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidSession()); // Verificar sesión inmediatamente
 
   constructor(private http: HttpClient) {
-    // NO verificar automáticamente el localStorage al inicializar
-    // Solo se autenticará cuando se haga login activamente
+    // La verificación ya se hace en la inicialización del BehaviorSubject
+  }
+
+  private hasValidSession(): boolean {
+    // Verificación síncrona al momento de crear el servicio
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        return !!user; // Si hay datos válidos, retorna true
+      } catch (error) {
+        // Si hay error parsing, limpiar datos corruptos
+        localStorage.removeItem('user');
+        return false;
+      }
+    }
+    return false;
+  }
+
+  checkInitialAuthState(): void {
+    // Esta función ya no es necesaria, pero la mantengo para compatibilidad
+    // La verificación se hace automáticamente en hasValidSession()
   }
 
   login(req: LoginRequest): Observable<User> {
@@ -39,5 +59,20 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('user');
     this.setAuthenticated(false);
+  }
+
+  getCurrentUser(): User | null {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        return JSON.parse(userData);
+      } catch (error) {
+        // Si hay error, limpiar datos corruptos
+        localStorage.removeItem('user');
+        this.setAuthenticated(false);
+        return null;
+      }
+    }
+    return null;
   }
 }
