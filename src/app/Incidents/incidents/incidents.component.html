@@ -3,7 +3,7 @@
   <div class="header">
     <h1>Monitor de Incidentes</h1>
   </div>
-  
+
   <mat-card class="search-card">
     <div class="search-container">
       <input matInput placeholder="Buscar por destino o descripción..." [(ngModel)]="searchText"
@@ -22,10 +22,10 @@
 
   <!-- Lista de Deliveries con sus Incidentes -->
   <div class="deliveries-list" *ngIf="!loading">
-    <mat-expansion-panel 
-      class="delivery-panel" 
+    <mat-expansion-panel
+      class="delivery-panel"
       *ngFor="let item of deliveriesWithIncidents">
-      
+
       <!-- Header del Panel -->
       <mat-expansion-panel-header>
         <mat-panel-title>
@@ -39,17 +39,17 @@
             </div>
             <div class="incidents-summary">
               <mat-chip-set>
-                <mat-chip *ngIf="item.automaticIncidents.length > 0" 
+                <mat-chip *ngIf="item.automaticIncidents.length > 0"
                          class="chip-automatic">
                   <mat-icon>sensors</mat-icon>
                   {{item.automaticIncidents.length}} Automático(s)
                 </mat-chip>
-                <mat-chip *ngIf="item.manualIncidents.length > 0" 
+                <mat-chip *ngIf="item.manualIncidents.length > 0"
                          class="chip-manual">
                   <mat-icon>person</mat-icon>
                   {{item.manualIncidents.length}} Manual(es)
                 </mat-chip>
-                <mat-chip *ngIf="item.totalIncidents === 0" 
+                <mat-chip *ngIf="item.totalIncidents === 0"
                          class="chip-safe">
                   <mat-icon>check_circle</mat-icon>
                   Sin incidentes
@@ -62,13 +62,13 @@
 
       <!-- Contenido del Panel -->
       <div class="panel-content">
-        
+
         <!-- Incidentes Automáticos (Sensores) -->
         <div class="incidents-section" *ngIf="item.automaticIncidents.length > 0">
           <h4><mat-icon>sensors</mat-icon> Incidentes Detectados por Sensores</h4>
           <div class="incidents-grid">
-            <mat-card 
-              class="incident-card automatic" 
+            <mat-card
+              class="incident-card automatic"
               *ngFor="let incident of item.automaticIncidents"
               [class]="getSeverityClass(incident.severity)">
               <mat-card-header>
@@ -76,7 +76,7 @@
                   {{getSensorIcon(incident.source)}}
                 </mat-icon>
                 <mat-card-title>
-                  {{incident.source === 'GAS' ? 'Gas' : incident.source === 'TEMPERATURE' ? 'Temperatura' : 'Ritmo Cardíaco'}} 
+                  {{incident.source === 'GAS' ? 'Gas' : incident.source === 'TEMPERATURE' ? 'Temperatura' : 'Ritmo Cardíaco'}}
                   - {{incident.severity}}
                 </mat-card-title>
                 <mat-card-subtitle>{{formatDate(incident.timestamp)}}</mat-card-subtitle>
@@ -84,10 +84,10 @@
               <mat-card-content>
                 <p class="incident-message">{{incident.message}}</p>
                 <div class="incident-details">
-                  <span><strong>Valor actual:</strong> 
+                  <span><strong>Valor actual:</strong>
                     {{incident.value}}{{incident.source === 'GAS' ? ' ppm' : incident.source === 'TEMPERATURE' ? ' °C' : ' BPM'}}
                   </span>
-                  <span><strong>Umbral superado:</strong> 
+                  <span><strong>Umbral superado:</strong>
                     {{incident.threshold}}{{incident.source === 'GAS' ? ' ppm' : incident.source === 'TEMPERATURE' ? ' °C' : ' BPM'}}
                   </span>
                   <span><strong>Sensor ID:</strong> {{incident.sensorId}}</span>
@@ -104,8 +104,8 @@
         <div class="incidents-section" *ngIf="item.manualIncidents.length > 0">
           <h4><mat-icon>person</mat-icon> Incidentes Reportados por Conductor</h4>
           <div class="incidents-grid">
-            <mat-card 
-              class="incident-card manual" 
+            <mat-card
+              class="incident-card manual"
               *ngFor="let incident of item.manualIncidents">
               <mat-card-header>
                 <mat-icon mat-card-avatar color="accent">report</mat-icon>
@@ -125,7 +125,7 @@
         <!-- Información del Sensor -->
         <div class="sensor-info-section" *ngIf="item.sensors.length > 0 || item.latestRecords.length > 0">
           <h4><mat-icon>sensors</mat-icon> Información del Sensor</h4>
-          
+
           <!-- Estado del Sensor -->
           <mat-card class="sensor-status-card" *ngFor="let sensor of item.sensors">
             <mat-card-header>
@@ -265,8 +265,8 @@
   </div>
 
   <!-- Botón flotante para agregar incidente - solo para empleados -->
-  <button *ngIf="isEmployee()" 
-          mat-fab 
+  <button *ngIf="isEmployee()"
+          mat-fab
           class="floating-add-btn"
           (click)="addIncident()">
     <mat-icon>add</mat-icon>

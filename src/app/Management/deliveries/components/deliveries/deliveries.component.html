@@ -37,7 +37,12 @@
         </div>
       </div>
       <!-- Botón para abrir el diálogo de nuevo delivery -->
-      <button class="add-delivery-button" [routerLink]="['/deliveries/add']">Add new delivery</button>
+      <button
+        class="add-delivery-button"
+        [routerLink]="['/deliveries/add']"
+        *ngIf="userRole === 'COMPANY'">
+        Add new delivery
+      </button>
     </div>
 
     <p class="no-more-trips" *ngIf="deliveries.length === 0">No hay más viajes por mostrar</p>
