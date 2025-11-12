@@ -1,5 +1,5 @@
 [build]
-  publish = "dist/secureon-webapp"
+  publish = "dist/secureon-webapp/browser"
   command = "npm run build"
 
 [build.environment]
