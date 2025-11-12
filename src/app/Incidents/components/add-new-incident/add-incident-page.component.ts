@@ -263,6 +263,9 @@ export class AddIncidentPageComponent implements OnInit {
       serviceId: serviceId
     };
 
+    console.log('🚨 Creating incident for delivery:', this.selectedDeliveryId);
+    console.log('🚨 Incident data being sent:', incidentData);
+
     this.incidentService.createIncident(incidentData).subscribe({
       next: (response) => {
         alert('Incidente reportado exitosamente');

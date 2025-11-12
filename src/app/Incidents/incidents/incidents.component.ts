@@ -69,12 +69,20 @@ export class IncidentsComponent implements OnInit {
       // Para empleados: usar la MISMA lógica que funciona en deliveries.component.ts
       this.loadDeliveriesForEmployee(this.userId);
     } else {
-      // Para empresas: obtener todos los deliveries
+      // Para empresas: obtener todos los deliveries (solo los aceptados o en progreso)
       this.baseService.getDeliveries().subscribe({
         next: (deliveries: Delivery[]) => {
-          this.processDeliveries(deliveries);
+          // Filtrar solo deliveries que están aceptados o en progreso
+          const acceptedDeliveries = deliveries.filter(delivery => 
+            delivery.state === 'ACCEPTED' || 
+            delivery.state === 'IN_PROGRESS' ||
+            delivery.state === 'COMPLETED'
+          );
+          console.log('Total deliveries:', deliveries.length, 'Filtered (accepted/in_progress/completed):', acceptedDeliveries.length);
+          this.processDeliveries(acceptedDeliveries);
         },
         error: (err) => {
+          console.error('Error loading deliveries:', err);
           this.loading = false;
         }
       });
@@ -90,16 +98,15 @@ export class IncidentsComponent implements OnInit {
           
           this.baseService.getDeliveries().subscribe({
             next: (data: Delivery[]) => {
-              // Aplicar el mismo filtro que en deliveries.component.ts
+              // Solo mostrar deliveries que ya han sido aceptados por el empleado
               const employeeDeliveries = Array.isArray(data)
                 ? data.filter(delivery =>
-                    delivery.state === 'PENDING' ||
-                    (
-                      delivery.employeeId === employeeId &&
-                      (delivery.state === 'IN_PROGRESS' || delivery.state === 'COMPLETED')
-                    )
+                    delivery.employeeId === employeeId &&
+                    (delivery.state === 'IN_PROGRESS' || delivery.state === 'COMPLETED')
                   )
                 : [];
+              
+              console.log('Employee deliveries (only IN_PROGRESS/COMPLETED):', employeeDeliveries.length);
               
               this.processDeliveries(employeeDeliveries);
             },
@@ -146,8 +153,11 @@ export class IncidentsComponent implements OnInit {
       let manualIncidents: any[] = [];
       try {
         manualIncidents = await this.incidentService.getIncidentsByDelivery(delivery.id).toPromise() || [];
-      } catch (error) {
-        // No se pudieron cargar incidentes manuales
+        console.log(`Loaded ${manualIncidents.length} manual incidents for delivery ${delivery.id}`);
+      } catch (error: any) {
+        console.warn(`No incidents found for delivery ${delivery.id}:`, error.status);
+        // Si es 404, simplemente no hay incidentes para este delivery (es normal)
+        manualIncidents = [];
       }
       
       // Para empleados: usar datos mock de sensores directamente sin depender de APIs externas

@@ -15,6 +15,7 @@ export interface CreateIncidentRequest {
   date: string;
   description: string;
   serviceId: number;
+  deliveryId?: number;
 }
 
 export interface Service {
@@ -69,6 +70,8 @@ export class IncidentService {
 
   // Crear nuevo incidente
   createIncident(incident: CreateIncidentRequest): Observable<Incident> {
+    console.log('📤 Sending incident to backend:', incident);
+    console.log('📤 POST URL:', `${this.API_URL}/incidents`);
     return this.http.post<Incident>(`${this.API_URL}/incidents`, incident);
   }
 
