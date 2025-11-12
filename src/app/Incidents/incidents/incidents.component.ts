@@ -168,6 +168,13 @@ export class IncidentsComponent implements OnInit {
       try {
         manualIncidents = await this.incidentService.getIncidentsByDelivery(delivery.id).toPromise() || [];
         console.log(`📝 Incidentes manuales para delivery ${delivery.id}:`, manualIncidents);
+        
+        // Debug: verificar las fechas de los incidentes manuales
+        manualIncidents.forEach((incident, index) => {
+          console.log(`🔍 Incidente ${index + 1} fecha original:`, incident.date);
+          console.log(`🔍 Incidente ${index + 1} tipo de fecha:`, typeof incident.date);
+          console.log(`🔍 Incidente ${index + 1} fecha formateada:`, this.formatDate(incident.date));
+        });
       } catch (error) {
         console.log('⚠️ No se pudieron cargar incidentes manuales:', error);
       }
@@ -289,10 +296,224 @@ export class IncidentsComponent implements OnInit {
   }
 
   // Formatear fecha
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  formatDate(dateString: string | Date | null): string {
+    console.log('🕐 formatDate recibió:', dateString, 'tipo:', typeof dateString);
+    console.log('🕐 formatDate dateString toString():', dateString?.toString());
+    console.log('🕐 formatDate JSON.stringify():', JSON.stringify(dateString));
+    
+    if (!dateString) {
+      return 'Fecha no disponible';
+    }
 
+    let date: Date;
+
+    // Manejar diferentes tipos de entrada
+    if (dateString instanceof Date) {
+      date = dateString;
+    } else if (Array.isArray(dateString)) {
+      console.log('🔧 formatDate recibió un array:', dateString);
+      // Si es un array, usar los elementos como [año, mes, día, hora, minuto, segundo]
+      if (dateString.length >= 3) {
+        const year = dateString[0];
+        const month = dateString[1] - 1; // Los meses en JavaScript van de 0-11
+        const day = dateString[2];
+        const hour = dateString[3] || 0;
+        const minute = dateString[4] || 0;
+        const second = dateString[5] || 0;
+        
+        date = new Date(year, month, day, hour, minute, second);
+        console.log('🔧 Fecha creada desde array:', date);
+      } else {
+        return `Fecha inválida (array corto): ${JSON.stringify(dateString)}`;
+      }
+    } else if (typeof dateString === 'string') {
+      // Intentar diferentes formatos de fecha
+      
+      // Formato ISO con Z o timezone
+      if (dateString.includes('T') || dateString.includes('Z')) {
+        date = new Date(dateString);
+      }
+      // Formato con comas: "2025,11,11,0,0" o similar
+      else if (dateString.includes(',')) {
+        console.log('🔧 Procesando fecha con comas:', dateString);
+        const parts = dateString.split(',').map(part => parseInt(part.trim()));
+        console.log('🔧 Parts separados:', parts);
+        
+        if (parts.length >= 3 && parts.every(part => !isNaN(part))) {
+          // Formato: año, mes, día, [hora], [minuto], [segundo]
+          const year = parts[0];
+          const month = parts[1] - 1; // Los meses en JavaScript van de 0-11
+          const day = parts[2];
+          const hour = parts[3] || 0;
+          const minute = parts[4] || 0;
+          const second = parts[5] || 0;
+          
+          console.log('🔧 Construyendo fecha con:', { year, month: month + 1, day, hour, minute, second });
+          date = new Date(year, month, day, hour, minute, second);
+          console.log('🔧 Fecha creada desde comas:', date, 'isValid:', !isNaN(date.getTime()));
+        } else {
+          console.log('🚨 Error: parts inválidos o incompletos:', parts);
+          return `Fecha inválida (comas): ${dateString}`;
+        }
+      }
+      // Formato yyyy-mm-dd
+      else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        date = new Date(dateString + 'T00:00:00');
+      }
+      // Formato dd/mm/yyyy o mm/dd/yyyy
+      else if (dateString.includes('/')) {
+        date = new Date(dateString);
+      }
+      // Formato dd-mm-yyyy
+      else if (dateString.includes('-') && dateString.length === 10) {
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+          // Asumir yyyy-mm-dd
+          date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        } else {
+          date = new Date(dateString);
+        }
+      }
+      // Timestamp numérico como string
+      else if (/^\d+$/.test(dateString)) {
+        const timestamp = parseInt(dateString);
+        // Si es timestamp en segundos (10 dígitos), convertir a milisegundos
+        date = new Date(timestamp > 9999999999 ? timestamp : timestamp * 1000);
+      }
+      // Otros formatos
+      else {
+        date = new Date(dateString);
+      }
+    } else {
+      // Si es un número (timestamp)
+      const timestamp = Number(dateString);
+      date = new Date(timestamp > 9999999999 ? timestamp : timestamp * 1000);
+    }
+    
+    console.log('🕐 Date object creado:', date, 'isValid:', !isNaN(date.getTime()));
+    
+    // Verificar si la fecha es válida
+    if (isNaN(date.getTime())) {
+      console.error('🚨 Fecha inválida detectada:', dateString);
+      return `Fecha inválida: ${dateString}`;
+    }
+    
+    // Validar que la fecha esté en un rango razonable (años 2020-2030)
+    const year = date.getFullYear();
+    if (year < 2020 || year > 2030) {
+      console.warn('⚠️ Fecha con año fuera de rango:', year, 'fecha original:', dateString);
+      return `Fecha fuera de rango: ${dateString}`;
+    }
+    
+    try {
+      // Formatear solo fecha con zona horaria de Lima
+      const formattedDate = date.toLocaleDateString('es-PE', {
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+      
+      console.log('🕐 Fecha formateada exitosamente:', formattedDate);
+      return formattedDate;
+    } catch (error) {
+      console.error('🚨 Error formateando fecha:', error);
+      return date.toLocaleDateString(); // Fallback simple
+    }
+  }
+
+  // Formatear solo fecha (sin hora)
+  formatDateOnly(dateString: string | Date | null): string {
+    if (!dateString) {
+      return 'Fecha no disponible';
+    }
+
+    let date: Date;
+
+    // Usar la misma lógica de formatDate para parsing
+    if (dateString instanceof Date) {
+      date = dateString;
+    } else if (Array.isArray(dateString)) {
+      // Si es un array, usar los elementos como [año, mes, día, hora, minuto, segundo]
+      if (dateString.length >= 3) {
+        const year = dateString[0];
+        const month = dateString[1] - 1; // Los meses en JavaScript van de 0-11
+        const day = dateString[2];
+        const hour = dateString[3] || 0;
+        const minute = dateString[4] || 0;
+        const second = dateString[5] || 0;
+        
+        date = new Date(year, month, day, hour, minute, second);
+      } else {
+        return `Fecha inválida (array corto): ${JSON.stringify(dateString)}`;
+      }
+    } else if (typeof dateString === 'string') {
+      // Intentar diferentes formatos de fecha
+      if (dateString.includes('T') || dateString.includes('Z')) {
+        date = new Date(dateString);
+      }
+      // Formato con comas: "2025,11,11,0,0" o similar
+      else if (dateString.includes(',')) {
+        const parts = dateString.split(',').map(part => parseInt(part.trim()));
+        
+        if (parts.length >= 3 && parts.every(part => !isNaN(part))) {
+          // Formato: año, mes, día, [hora], [minuto], [segundo]
+          const year = parts[0];
+          const month = parts[1] - 1; // Los meses en JavaScript van de 0-11
+          const day = parts[2];
+          const hour = parts[3] || 0;
+          const minute = parts[4] || 0;
+          const second = parts[5] || 0;
+          
+          date = new Date(year, month, day, hour, minute, second);
+        } else {
+          return `Fecha inválida (comas): ${dateString}`;
+        }
+      }
+      else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        date = new Date(dateString + 'T00:00:00');
+      }
+      else if (dateString.includes('/')) {
+        date = new Date(dateString);
+      }
+      else if (dateString.includes('-') && dateString.length === 10) {
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+          date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        } else {
+          date = new Date(dateString);
+        }
+      }
+      else if (/^\d+$/.test(dateString)) {
+        const timestamp = parseInt(dateString);
+        date = new Date(timestamp > 9999999999 ? timestamp : timestamp * 1000);
+      }
+      else {
+        date = new Date(dateString);
+      }
+    } else {
+      const timestamp = Number(dateString);
+      date = new Date(timestamp > 9999999999 ? timestamp : timestamp * 1000);
+    }
+    
+    // Verificar si la fecha es válida
+    if (isNaN(date.getTime())) {
+      return `Fecha inválida: ${dateString}`;
+    }
+    
+    // Validar que la fecha esté en un rango razonable (años 2020-2030)
+    const year = date.getFullYear();
+    if (year < 2020 || year > 2030) {
+      return `Fecha fuera de rango: ${dateString}`;
+    }
+    
+    // Formatear solo fecha con zona horaria de Lima
+    return date.toLocaleDateString('es-PE', {
+      timeZone: 'America/Lima',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   // Métodos para obtener estado y clase CSS de los valores de sensores
