@@ -1,37 +1,323 @@
-<div class="delivery-details-container">
-  <div class="header">
-    <h2>Delivers</h2>
-    <h4>Report</h4>
-    <img
-      src="https://github.com/user-attachments/assets/63ca6961-f592-49cd-a7d1-0a646b71ae12"
-      alt="Delivery Icon"
-      class="delivery-icon"
-    />
+<!-- Botones de acción (fuera del área de reporte) -->
+<div class="actions-container">
+  <button mat-raised-button color="primary" (click)="downloadPDF()" [disabled]="loading">
+    <mat-icon>download</mat-icon>
+    Descargar PDF
+  </button>
+  <button mat-raised-button (click)="returnToDeliveries()">
+    <mat-icon>arrow_back</mat-icon>
+    Volver a Deliveries
+  </button>
+</div>
+
+<!-- Loading -->
+<div *ngIf="loading" class="loading-container">
+  <mat-icon class="spinning">refresh</mat-icon>
+  <p>Cargando reporte completo...</p>
+</div>
+
+<!-- Reporte Completo -->
+<div id="complete-report" class="report-container" *ngIf="!loading">
+  
+  <!-- Encabezado del Reporte -->
+  <div class="report-header">
+    <div class="company-info">
+      <h1>SecureOn</h1>
+      <p>Reporte Completo de Delivery</p>
+    </div>
+    <div class="report-meta">
+      <p><strong>Fecha de Generación:</strong> {{ reportDate | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Delivery ID:</strong> {{ deliveryId }}</p>
+    </div>
   </div>
 
-  <div class="delivery-details-card-container">
-    <!-- MUESTRA TODOS LOS RECORDS -->
-    <mat-card class="delivery-details-card" *ngFor="let record of records">
-      <div class="delivery-details-header">
-        <h3>Report ID: {{ record.id }}</h3>
-        <p>Sensor ID: {{ record.sensorId }}</p>
-      </div>
-      <div class="delivery-details-body">
-        <div class="delivery-details-body-subtitle">
-          <p>Report Details</p>
+  <mat-divider></mat-divider>
+
+  <!-- Información del Delivery -->
+  <mat-card class="section-card" *ngIf="delivery">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>local_shipping</mat-icon>
+        Información del Delivery
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="delivery-info-grid">
+        <div class="info-item">
+          <strong>ID:</strong> {{ delivery.id }}
         </div>
-        <p>Gas Value: <span>{{ record.gasValue }}</span></p>
-        <p>HeartRate Value: <span>{{ record.heartRateValue }}</span></p>
-        <p>Temperature Value: <span>{{ record.temperatureValue }}</span></p>
-        <p>Location: <span>{{ record.latitude }}, {{ record.longitude }}</span></p>
-        <p>Timestamp:
-          <span *ngIf="record.timestamp && record.timestamp.length >= 6">
-            {{ record.timestamp[0] }}/{{ record.timestamp[1] }}/{{ record.timestamp[2] }}
-            {{ record.timestamp[3] }}:{{ record.timestamp[4] }}:{{ record.timestamp[5] }}
+        <div class="info-item">
+          <strong>Destino:</strong> {{ delivery.destination }}
+        </div>
+        <div class="info-item">
+          <strong>Estado:</strong> 
+          <span [class]="'state-' + delivery.state.toLowerCase()">
+            {{ delivery.state }}
           </span>
-        </p>
+        </div>
+        <div class="info-item">
+          <strong>Ruta:</strong> {{ delivery.route }}
+        </div>
+        <div class="info-item">
+          <strong>Punto de Salida:</strong> {{ delivery.exitPoint }}
+        </div>
+        <div class="info-item">
+          <strong>Empleado ID:</strong> {{ delivery.employeeId }}
+        </div>
+        <div class="info-item">
+          <strong>Tipo de Combustible:</strong> {{ delivery.combustibleType }}
+        </div>
+        <div class="info-item" *ngIf="delivery.packageDescription">
+          <strong>Descripción del Paquete:</strong> {{ delivery.packageDescription }}
+        </div>
       </div>
-    </mat-card>
-    <button class="return-button" (click)="returnToDeliveries()">Return Home</button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Resumen de Sensores -->
+  <mat-card class="section-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>sensors</mat-icon>
+        Resumen de Sensores ({{ records.length }} registros)
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="sensor-summary" *ngIf="records.length > 0">
+        <div class="summary-item">
+          <mat-icon>local_gas_station</mat-icon>
+          <div>
+            <strong>Gas Promedio:</strong>
+            {{ getAverageGas() }}%
+          </div>
+        </div>
+        <div class="summary-item">
+          <mat-icon>thermostat</mat-icon>
+          <div>
+            <strong>Temperatura Promedio:</strong>
+            {{ getAverageTemperature() }}°C
+          </div>
+        </div>
+        <div class="summary-item">
+          <mat-icon>favorite</mat-icon>
+          <div>
+            <strong>Pulso Promedio:</strong>
+            {{ getAverageHeartRate() }} BPM
+          </div>
+        </div>
+      </div>
+      
+      <p *ngIf="records.length === 0" class="no-data-text">
+        No se encontraron registros de sensores para este delivery.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Registros Detallados de Sensores -->
+  <mat-card class="section-card" *ngIf="records.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>timeline</mat-icon>
+        Registros Detallados de Sensores
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="records-grid">
+        <div 
+          *ngFor="let record of records; let i = index" 
+          class="record-item"
+          [class]="getSensorStatusClass(record)">
+          
+          <div class="record-header">
+            <strong>Registro #{{ i + 1 }}</strong>
+            <small>Sensor ID: {{ record.sensorId }}</small>
+          </div>
+          
+          <div class="record-data">
+            <div class="data-row">
+              <mat-icon>local_gas_station</mat-icon>
+              <span>Gas: {{ record.gasValue }}%</span>
+            </div>
+            <div class="data-row">
+              <mat-icon>thermostat</mat-icon>
+              <span>Temperatura: {{ record.temperatureValue }}°C</span>
+            </div>
+            <div class="data-row">
+              <mat-icon>favorite</mat-icon>
+              <span>Pulso: {{ record.heartRateValue }} BPM</span>
+            </div>
+            <div class="data-row">
+              <mat-icon>location_on</mat-icon>
+              <span>Ubicación: {{ record.latitude }}, {{ record.longitude }}</span>
+            </div>
+            <div class="data-row" *ngIf="record.timestamp">
+              <mat-icon>access_time</mat-icon>
+              <span>Tiempo: {{ formatDate(record.timestamp) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Incidentes Reportados -->
+  <mat-card class="section-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>report_problem</mat-icon>
+        Incidentes Reportados ({{ incidents.length + automaticIncidents.length }})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      
+      <!-- Incidentes Manuales del Conductor -->
+      <div *ngIf="incidents.length > 0" class="incidents-section">
+        <h3 class="section-subtitle">
+          <mat-icon>report</mat-icon>
+          Incidentes Reportados por Conductor ({{ incidents.length }})
+        </h3>
+        <div class="incidents-list">
+          <div *ngFor="let incident of incidents; let i = index" class="incident-item manual-incident">
+            <div class="incident-header">
+              <strong>Incidente Manual #{{ i + 1 }}</strong>
+              <span class="incident-type manual">MANUAL</span>
+            </div>
+            
+            <div class="incident-details">
+              <div class="detail-row">
+                <mat-icon>place</mat-icon>
+                <span><strong>Lugar:</strong> {{ incident.incidentPlace }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>description</mat-icon>
+                <span><strong>Descripción:</strong> {{ incident.description }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>event</mat-icon>
+                <span><strong>Fecha:</strong> {{ formatDate(incident.date) }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>settings</mat-icon>
+                <span><strong>Servicio ID:</strong> {{ incident.serviceId }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Incidentes Automáticos de Sensores -->
+      <div *ngIf="automaticIncidents.length > 0" class="incidents-section">
+        <h3 class="section-subtitle">
+          <mat-icon>sensors</mat-icon>
+          Incidentes Detectados por Sensores ({{ automaticIncidents.length }})
+        </h3>
+        <div class="incidents-list">
+          <div *ngFor="let incident of automaticIncidents; let i = index" class="incident-item automatic-incident">
+            <div class="incident-header">
+              <strong>Incidente Automático #{{ i + 1 }}</strong>
+              <span class="incident-type automatic">AUTOMÁTICO</span>
+              <span class="severity-badge" [class]="'severity-' + incident.severity.toLowerCase()">
+                {{ incident.severity }}
+              </span>
+            </div>
+            
+            <div class="incident-details">
+              <div class="detail-row">
+                <mat-icon>{{ getSensorIcon(incident.source) }}</mat-icon>
+                <span><strong>Tipo:</strong> {{ incident.source }} - {{ incident.severity }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>description</mat-icon>
+                <span><strong>Descripción:</strong> {{ incident.message }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>event</mat-icon>
+                <span><strong>Fecha:</strong> {{ formatDate(incident.timestamp) }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>speed</mat-icon>
+                <span><strong>Valor actual:</strong> {{ incident.value }} {{ getSensorUnit(incident.source) }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>warning</mat-icon>
+                <span><strong>Umbral superado:</strong> {{ incident.threshold }} {{ getSensorUnit(incident.source) }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>memory</mat-icon>
+                <span><strong>Sensor ID:</strong> {{ incident.sensorId }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cuando no hay incidentes -->
+      <div *ngIf="incidents.length === 0 && automaticIncidents.length === 0" class="no-incidents">
+        <mat-icon>check_circle</mat-icon>
+        <p>No se reportaron incidentes durante este delivery.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Conclusiones -->
+  <mat-card class="section-card conclusions">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>assessment</mat-icon>
+        Conclusiones del Reporte
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="conclusion-item" *ngIf="delivery">
+        <strong>Estado del Delivery:</strong> 
+        <span [class]="'state-' + delivery.state.toLowerCase()">
+          {{ delivery.state === 'COMPLETED' ? 'Completado exitosamente' : 
+             delivery.state === 'IN_PROGRESS' ? 'En progreso' : 
+             delivery.state === 'ACCEPTED' ? 'Aceptado' : delivery.state }}
+        </span>
+      </div>
+      
+      <div class="conclusion-item">
+        <strong>Calidad de los Sensores:</strong>
+        <span [class]="getQualityStatus()">
+          {{ getQualityText() }}
+        </span>
+      </div>
+      
+      <div class="conclusion-item">
+        <strong>Incidentes Manuales:</strong>
+        <span [class]="incidents.length === 0 ? 'status-good' : 'status-warning'">
+          {{ incidents.length === 0 ? 'Sin incidentes del conductor' : incidents.length + ' incidente(s) reportado(s) por el conductor' }}
+        </span>
+      </div>
+
+      <div class="conclusion-item">
+        <strong>Incidentes Automáticos:</strong>
+        <span [class]="automaticIncidents.length === 0 ? 'status-good' : getAutomaticIncidentStatus()">
+          {{ getAutomaticIncidentSummary() }}
+        </span>
+      </div>
+
+      <div class="conclusion-item">
+        <strong>Total de Incidentes:</strong>
+        <span [class]="(incidents.length + automaticIncidents.length) === 0 ? 'status-good' : 'status-warning'">
+          {{ (incidents.length + automaticIncidents.length) === 0 ? 'Sin incidentes' : (incidents.length + automaticIncidents.length) + ' incidente(s) en total' }}
+        </span>
+      </div>
+      
+      <div class="conclusion-item">
+        <strong>Recomendación General:</strong>
+        <span>
+          {{ getGeneralRecommendation() }}
+        </span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Footer del Reporte -->
+  <div class="report-footer">
+    <mat-divider></mat-divider>
+    <p>Reporte generado automáticamente por SecureOn - {{ reportDate | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+    <p>Este documento contiene información confidencial de la empresa.</p>
   </div>
 </div>
