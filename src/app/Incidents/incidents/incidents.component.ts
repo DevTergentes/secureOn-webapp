@@ -64,22 +64,17 @@ export class IncidentsComponent implements OnInit {
 
   loadDeliveriesWithIncidents(): void {
     this.loading = true;
-    console.log('🔄 Iniciando carga de deliveries para usuario:', this.userRole, 'ID:', this.userId);
     
     if (this.isEmployee() && this.userId) {
       // Para empleados: usar la MISMA lógica que funciona en deliveries.component.ts
-      console.log('📋 Cargando deliveries para empleado usando lógica de deliveries.component');
       this.loadDeliveriesForEmployee(this.userId);
     } else {
       // Para empresas: obtener todos los deliveries
-      console.log('🏢 Cargando todos los deliveries para empresa');
       this.baseService.getDeliveries().subscribe({
         next: (deliveries: Delivery[]) => {
-          console.log('✅ Deliveries obtenidos del backend:', deliveries);
           this.processDeliveries(deliveries);
         },
         error: (err) => {
-          console.error('❌ Error al cargar deliveries:', err);
           this.loading = false;
         }
       });
@@ -88,20 +83,13 @@ export class IncidentsComponent implements OnInit {
 
   // Método para empleados que usa la misma lógica que deliveries.component.ts
   loadDeliveriesForEmployee(userId: number): void {
-    console.log('🔍 Obteniendo employeeId para userId:', userId);
-    
     this.baseService.getEmployeesByUserId(userId).subscribe({
       next: (employees: any[]) => {
-        console.log('👥 Empleados encontrados:', employees);
-        
         if (employees && employees.length > 0) {
           const employeeId = employees[0].id;
-          console.log('🆔 EmployeeId obtenido:', employeeId);
           
           this.baseService.getDeliveries().subscribe({
             next: (data: Delivery[]) => {
-              console.log('📦 Todos los deliveries:', data);
-              
               // Aplicar el mismo filtro que en deliveries.component.ts
               const employeeDeliveries = Array.isArray(data)
                 ? data.filter(delivery =>
@@ -113,22 +101,18 @@ export class IncidentsComponent implements OnInit {
                   )
                 : [];
               
-              console.log('📋 Deliveries filtrados para empleado:', employeeDeliveries);
               this.processDeliveries(employeeDeliveries);
             },
             error: (error) => {
-              console.error('❌ Error loading deliveries:', error);
               this.loading = false;
             }
           });
         } else {
-          console.error('❌ No employee found for user id', userId);
           this.deliveriesWithIncidents = [];
           this.loading = false;
         }
       },
       error: (err) => {
-        console.error('❌ Error fetching employee by userId:', err);
         this.deliveriesWithIncidents = [];
         this.loading = false;
       }
@@ -138,7 +122,6 @@ export class IncidentsComponent implements OnInit {
   // Método para procesar los deliveries obtenidos
   private processDeliveries(deliveries: Delivery[]): void {
     if (!deliveries || deliveries.length === 0) {
-      console.log('⚠️ No se encontraron deliveries');
       this.deliveriesWithIncidents = [];
       this.loading = false;
       return;
@@ -152,46 +135,31 @@ export class IncidentsComponent implements OnInit {
     Promise.all(deliveryPromises).then(results => {
       this.deliveriesWithIncidents = results.filter(result => result !== null);
       this.loading = false;
-      console.log('🎯 Deliveries con incidentes cargados:', this.deliveriesWithIncidents);
     }).catch(error => {
-      console.error('❌ Error en Promise.all:', error);
       this.loading = false;
     });
   }
 
   private async loadIncidentsForDelivery(delivery: Delivery): Promise<any> {
     try {
-      console.log(`🔍 Cargando datos para delivery ${delivery.id} - ${delivery.destination}`);
-      
       // Obtener incidentes manuales del delivery
       let manualIncidents: any[] = [];
       try {
         manualIncidents = await this.incidentService.getIncidentsByDelivery(delivery.id).toPromise() || [];
-        console.log(`📝 Incidentes manuales para delivery ${delivery.id}:`, manualIncidents);
-        
-        // Debug: verificar las fechas de los incidentes manuales
-        manualIncidents.forEach((incident, index) => {
-          console.log(`🔍 Incidente ${index + 1} fecha original:`, incident.date);
-          console.log(`🔍 Incidente ${index + 1} tipo de fecha:`, typeof incident.date);
-          console.log(`🔍 Incidente ${index + 1} fecha formateada:`, this.formatDate(incident.date));
-        });
       } catch (error) {
-        console.log('⚠️ No se pudieron cargar incidentes manuales:', error);
+        // No se pudieron cargar incidentes manuales
       }
       
       // Para empleados: usar datos mock de sensores directamente sin depender de APIs externas
       let sensorRecords: any[] = [];
       let automaticIncidents: any[] = [];
       
-      // Crear datos de sensores simulados pero realistas
-      const mockSensorData = this.generateMockSensorData();
+      // Crear datos de sensores simulados pero realistas y consistentes
+      const mockSensorData = this.generateMockSensorData(delivery.id);
       sensorRecords = mockSensorData;
       
       // Detectar incidentes automáticos basados en los datos mock
       automaticIncidents = this.incidentService.detectAutomaticIncidents(sensorRecords);
-      
-      console.log(`📊 Datos de sensores simulados para delivery ${delivery.id}:`, sensorRecords);
-      console.log(`🚨 Incidentes automáticos detectados:`, automaticIncidents);
 
       // Crear información de sensores simplificada
       const sensors = [{
@@ -209,11 +177,9 @@ export class IncidentsComponent implements OnInit {
         totalIncidents: manualIncidents.length + automaticIncidents.length
       };
 
-      console.log(`✅ Datos cargados para delivery ${delivery.id}:`, result);
       return result;
       
     } catch (error) {
-      console.error(`❌ Error al cargar incidentes para delivery ${delivery.id}:`, error);
       return {
         delivery,
         manualIncidents: [],
@@ -225,23 +191,31 @@ export class IncidentsComponent implements OnInit {
     }
   }
 
-  // Generar datos de sensores mock realistas
-  private generateMockSensorData(): any[] {
+  // Generar datos de sensores mock realistas y consistentes
+  private generateMockSensorData(deliveryId: number): any[] {
     const now = new Date();
     const records = [];
+    
+    // Usar el deliveryId como semilla para generar valores consistentes
+    const seed = deliveryId;
     
     // Generar 10 registros de las últimas 2 horas
     for (let i = 9; i >= 0; i--) {
       const timestamp = new Date(now.getTime() - (i * 12 * 60 * 1000)); // Cada 12 minutos
       
+      // Generar valores consistentes basados en deliveryId y el índice
+      const gasValue = ((seed * 17 + i * 7) % 100) + 10; // 10-110 ppm
+      const temperatureValue = ((seed * 13 + i * 5) % 50) + 10; // 10-60°C
+      const heartRateValue = ((seed * 11 + i * 3) % 100) + 60; // 60-160 BPM
+      
       records.push({
         id: i + 1,
         deviceId: 'HR-2947',
-        gasValue: Math.floor(Math.random() * 100) + 10, // 10-110 ppm
-        temperatureValue: Math.floor(Math.random() * 50) + 10, // 10-60°C
-        heartRateValue: Math.floor(Math.random() * 100) + 60, // 60-160 BPM
+        gasValue: gasValue,
+        temperatureValue: temperatureValue,
+        heartRateValue: heartRateValue,
         timestamp: timestamp.toISOString(),
-        deliveryId: 1,
+        deliveryId: deliveryId,
         sensorId: 1
       });
     }
@@ -297,10 +271,6 @@ export class IncidentsComponent implements OnInit {
 
   // Formatear fecha
   formatDate(dateString: string | Date | null): string {
-    console.log('🕐 formatDate recibió:', dateString, 'tipo:', typeof dateString);
-    console.log('🕐 formatDate dateString toString():', dateString?.toString());
-    console.log('🕐 formatDate JSON.stringify():', JSON.stringify(dateString));
-    
     if (!dateString) {
       return 'Fecha no disponible';
     }
@@ -311,7 +281,6 @@ export class IncidentsComponent implements OnInit {
     if (dateString instanceof Date) {
       date = dateString;
     } else if (Array.isArray(dateString)) {
-      console.log('🔧 formatDate recibió un array:', dateString);
       // Si es un array, usar los elementos como [año, mes, día, hora, minuto, segundo]
       if (dateString.length >= 3) {
         const year = dateString[0];
@@ -322,7 +291,6 @@ export class IncidentsComponent implements OnInit {
         const second = dateString[5] || 0;
         
         date = new Date(year, month, day, hour, minute, second);
-        console.log('🔧 Fecha creada desde array:', date);
       } else {
         return `Fecha inválida (array corto): ${JSON.stringify(dateString)}`;
       }
@@ -335,9 +303,7 @@ export class IncidentsComponent implements OnInit {
       }
       // Formato con comas: "2025,11,11,0,0" o similar
       else if (dateString.includes(',')) {
-        console.log('🔧 Procesando fecha con comas:', dateString);
         const parts = dateString.split(',').map(part => parseInt(part.trim()));
-        console.log('🔧 Parts separados:', parts);
         
         if (parts.length >= 3 && parts.every(part => !isNaN(part))) {
           // Formato: año, mes, día, [hora], [minuto], [segundo]
@@ -348,11 +314,8 @@ export class IncidentsComponent implements OnInit {
           const minute = parts[4] || 0;
           const second = parts[5] || 0;
           
-          console.log('🔧 Construyendo fecha con:', { year, month: month + 1, day, hour, minute, second });
           date = new Date(year, month, day, hour, minute, second);
-          console.log('🔧 Fecha creada desde comas:', date, 'isValid:', !isNaN(date.getTime()));
         } else {
-          console.log('🚨 Error: parts inválidos o incompletos:', parts);
           return `Fecha inválida (comas): ${dateString}`;
         }
       }
@@ -390,18 +353,14 @@ export class IncidentsComponent implements OnInit {
       date = new Date(timestamp > 9999999999 ? timestamp : timestamp * 1000);
     }
     
-    console.log('🕐 Date object creado:', date, 'isValid:', !isNaN(date.getTime()));
-    
     // Verificar si la fecha es válida
     if (isNaN(date.getTime())) {
-      console.error('🚨 Fecha inválida detectada:', dateString);
       return `Fecha inválida: ${dateString}`;
     }
     
     // Validar que la fecha esté en un rango razonable (años 2020-2030)
     const year = date.getFullYear();
     if (year < 2020 || year > 2030) {
-      console.warn('⚠️ Fecha con año fuera de rango:', year, 'fecha original:', dateString);
       return `Fecha fuera de rango: ${dateString}`;
     }
     
@@ -414,10 +373,8 @@ export class IncidentsComponent implements OnInit {
         day: '2-digit'
       });
       
-      console.log('🕐 Fecha formateada exitosamente:', formattedDate);
       return formattedDate;
     } catch (error) {
-      console.error('🚨 Error formateando fecha:', error);
       return date.toLocaleDateString(); // Fallback simple
     }
   }

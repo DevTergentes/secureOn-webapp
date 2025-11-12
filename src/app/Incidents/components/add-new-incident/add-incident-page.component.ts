@@ -66,7 +66,6 @@ export class AddIncidentPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('Usuario logueado:', this.userRole, 'ID:', this.userId);
     this.initializeDateLimits();
     this.loadUserDeliveries();
   }
@@ -165,25 +164,17 @@ export class AddIncidentPageComponent implements OnInit {
 
   loadUserDeliveries() {
     if (!this.userId) {
-      console.log('❌ No se encontró userId');
       return;
     }
-
-    console.log('🔄 Cargando deliveries para userId usando la lógica que funciona:', this.userId);
 
     // Usar la MISMA lógica que funciona en deliveries.component.ts
     this.baseService.getEmployeesByUserId(this.userId).subscribe({
       next: (employees: any[]) => {
-        console.log('👥 Empleados encontrados:', employees);
-        
         if (employees && employees.length > 0) {
           const employeeId = employees[0].id;
-          console.log('🆔 EmployeeId obtenido:', employeeId);
           
           this.baseService.getDeliveries().subscribe({
             next: (data: Delivery[]) => {
-              console.log('📦 Todos los deliveries:', data);
-              
               // Aplicar el mismo filtro que en deliveries.component.ts para empleados
               const employeeDeliveries = Array.isArray(data)
                 ? data.filter(delivery =>
@@ -195,31 +186,20 @@ export class AddIncidentPageComponent implements OnInit {
                   )
                 : [];
               
-              console.log('📋 Deliveries filtrados para empleado:', employeeDeliveries);
-              
               // Filtrar solo los que están en estado válido para reportar incidentes
               this.deliveries = employeeDeliveries.filter(delivery => 
                 delivery.state === 'ACCEPTED' || delivery.state === 'IN_PROGRESS'
               );
-              
-              console.log('✅ Deliveries finales para reportar incidentes:', this.deliveries);
-              
-              if (this.deliveries.length === 0) {
-                console.log('⚠️ No hay deliveries en estado válido para reportar incidentes');
-              }
             },
             error: (error) => {
-              console.error('❌ Error loading deliveries:', error);
               this.deliveries = [];
             }
           });
         } else {
-          console.error('❌ No employee found for user id', this.userId);
           this.deliveries = [];
         }
       },
       error: (err) => {
-        console.error('❌ Error fetching employee by userId:', err);
         this.deliveries = [];
       }
     });
@@ -228,43 +208,24 @@ export class AddIncidentPageComponent implements OnInit {
   onDeliveryChange() {
     if (!this.selectedDeliveryId) return;
     
-    console.log('Delivery seleccionado:', this.selectedDeliveryId);
-    
     // Cargar servicios asociados al delivery seleccionado
     this.incidentService.getServices().subscribe({
       next: (services: Service[]) => {
         this.services = services.filter(service => 
           service.deliveryId === this.selectedDeliveryId
         );
-        console.log('Servicios encontrados:', this.services);
       },
       error: (err) => {
-        console.error('Error al cargar servicios:', err);
       }
     });
   }
 
   onSave() {
-    console.log('🔍 Iniciando validación del formulario...');
-    console.log('📋 Estado actual:', {
-      selectedDeliveryId: this.selectedDeliveryId,
-      incidentPlace: this.incident.incidentPlace,
-      description: this.incident.description,
-      date: this.incident.date
-    });
-
     // Validar todos los campos
     this.validateDelivery();
     this.validatePlace();
     this.validateDescription();
     this.validateDate();
-
-    console.log('❌ Errores de validación:', {
-      deliveryError: this.deliveryError,
-      placeError: this.placeError,
-      descriptionError: this.descriptionError,
-      dateError: this.dateError
-    });
 
     // Verificar campos básicos requeridos
     if (!this.selectedDeliveryId) {
@@ -302,16 +263,12 @@ export class AddIncidentPageComponent implements OnInit {
       serviceId: serviceId
     };
 
-    console.log('💾 Guardando incidente:', incidentData);
-
     this.incidentService.createIncident(incidentData).subscribe({
       next: (response) => {
-        console.log('✅ Incidente creado exitosamente:', response);
         alert('Incidente reportado exitosamente');
         this.router.navigate(['/incidents']);
       },
       error: (error) => {
-        console.error('❌ Error al crear incidente:', error);
         alert('Error al reportar el incidente. Intenta nuevamente.');
       }
     });
