@@ -2,33 +2,40 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, rgba(116, 192, 74, 0.1), rgba(24, 56, 86, 0.1));
+  background: #f5f5f5;
 }
 
 .incident-card {
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(24, 56, 86, 0.15);
-  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
   background: white;
 }
 
 .incident-card mat-card-header {
-  background: linear-gradient(135deg, #183856, #2a5d8a);
+  background: linear-gradient(135deg, #183856, #74c04a);
   color: white;
-  border-radius: 16px 16px 0 0;
+  border-radius: 12px 12px 0 0;
   margin: -24px -24px 24px -24px;
   padding: 24px;
+  overflow: hidden;
 }
 
 .incident-card mat-card-title {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.incident-card mat-card-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
   margin: 0;
 }
 
@@ -42,6 +49,11 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 0;
+}
+
+.form-section {
+  opacity: 1;
 }
 
 .w-100 {
@@ -113,22 +125,33 @@
 }
 
 /* Responsivo */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .add-incident-container {
-    padding: 10px;
-    min-height: 90vh;
+    padding: 15px;
+    min-height: 95vh;
   }
   
   .incident-card {
     margin: 0;
+    border-radius: 8px;
+  }
+  
+  .incident-card mat-card-header {
+    border-radius: 8px 8px 0 0;
+    padding: 20px;
   }
   
   .button-group {
     flex-direction: column;
+    gap: 10px;
   }
   
   .button-group button {
     width: 100%;
+  }
+  
+  .incident-form {
+    gap: 16px;
   }
 }
 
@@ -180,35 +203,31 @@
   margin-top: 30px;
 }
 
-/* Botones personalizados con la paleta de colores */
+/* Botones con la paleta de colores */
 ::ng-deep .mat-mdc-raised-button.mat-primary {
   background-color: #74c04a !important;
   color: white !important;
-  border-radius: 10px !important;
-  padding: 12px 30px !important;
-  font-weight: 600 !important;
-  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+  padding: 12px 24px !important;
+  font-weight: 500 !important;
+  transition: background-color 0.2s ease !important;
 }
 
 ::ng-deep .mat-mdc-raised-button.mat-primary:hover {
   background-color: #5ea836 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(116, 192, 74, 0.4) !important;
 }
 
 ::ng-deep .mat-mdc-raised-button.mat-warn {
-  background-color: #444444 !important;
+  background-color: #183856 !important;
   color: white !important;
-  border-radius: 10px !important;
-  padding: 12px 30px !important;
-  font-weight: 600 !important;
-  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+  padding: 12px 24px !important;
+  font-weight: 500 !important;
+  transition: background-color 0.2s ease !important;
 }
 
 ::ng-deep .mat-mdc-raised-button.mat-warn:hover {
-  background-color: #333333 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(68, 68, 68, 0.4) !important;
+  background-color: #0f2538 !important;
 }
 
 ::ng-deep .mat-mdc-raised-button:disabled {
@@ -285,9 +304,9 @@
 }
 
 .state-pending { background: #fff3cd; color: #856404; }
-.state-accepted { background: #d1ecf1; color: #0c5460; }
-.state-in_progress { background: #d4edda; color: #155724; }
-.state-completed { background: #e2e3e5; color: #383d41; }
+.state-accepted { background: #74c04a; color: white; }
+.state-in_progress { background: #183856; color: white; }
+.state-completed { background: #6c757d; color: white; }
 
 .delivery-details {
   color: #666;
@@ -303,13 +322,66 @@
   font-size: 0.8em;
 }
 
-/* Mejorar el ancho de las opciones del select */
+/* Mejorar las opciones del select con fondo */
 ::ng-deep .mat-mdc-select-panel .mat-mdc-option {
   min-height: 60px !important;
-  padding: 8px 16px !important;
-  line-height: 1.2 !important;
+  padding: 12px 16px !important;
+  line-height: 1.3 !important;
+  margin: 2px 4px !important;
+  border-radius: 6px !important;
+  background: #f8f9fa !important;
+  border: 1px solid #e9ecef !important;
+  transition: all 0.2s ease !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option:hover {
+  background: #74c04a !important;
+  color: white !important;
+  border-color: #74c04a !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option:hover .delivery-option strong,
+::ng-deep .mat-mdc-select-panel .mat-mdc-option:hover .delivery-option small {
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option.mdc-list-item--selected {
+  background: #183856 !important;
+  color: white !important;
+  border-color: #183856 !important;
+}
+
+::ng-deep .mat-mdc-select-panel .mat-mdc-option.mdc-list-item--selected .delivery-option strong,
+::ng-deep .mat-mdc-select-panel .mat-mdc-option.mdc-list-item--selected .delivery-option small {
+  color: white !important;
 }
 
 ::ng-deep .mat-mdc-select-panel {
-  max-width: 600px !important;
+  max-width: 500px !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #e9ecef !important;
+  padding: 4px !important;
+}
+
+/* Estados de delivery simplificados */
+.delivery-option .state-pending { 
+  background: #fff3cd !important; 
+  color: #856404 !important;
+}
+
+.delivery-option .state-accepted { 
+  background: #74c04a !important; 
+  color: white !important;
+}
+
+.delivery-option .state-in_progress { 
+  background: #183856 !important; 
+  color: white !important;
+}
+
+.delivery-option .state-completed { 
+  background: #6c757d !important; 
+  color: white !important;
 }

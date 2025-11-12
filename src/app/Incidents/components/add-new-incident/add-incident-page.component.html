@@ -5,65 +5,134 @@
         <mat-icon>report</mat-icon>
         Reportar Incidente
       </mat-card-title>
+      <mat-card-subtitle>
+        Complete todos los campos para reportar un incidente
+      </mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
       <form (ngSubmit)="onSave()" class="incident-form">
         
         <!-- Selección de Delivery -->
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Delivery</mat-label>
-          <mat-select [(ngModel)]="selectedDeliveryId" name="deliveryId" 
-                      (selectionChange)="onDeliveryChange()" required>
-            <mat-option *ngFor="let delivery of deliveries" [value]="delivery.id">
-              <div class="delivery-option">
-                <strong>{{delivery.destination}}</strong>
-                <small>{{delivery.packageDescription}}</small>
-              </div>
-            </mat-option>
-          </mat-select>
-          <mat-hint>Selecciona el delivery afectado</mat-hint>
-        </mat-form-field>
+        <div class="form-section">
+          <mat-form-field appearance="outline" class="w-100" [class.mat-form-field-invalid]="deliveryError">
+            <mat-label>
+              <mat-icon>local_shipping</mat-icon>
+              Delivery Afectado
+            </mat-label>
+            <mat-select [(ngModel)]="selectedDeliveryId" name="deliveryId" 
+                        (selectionChange)="onDeliveryChange(); validateDelivery()" 
+                        (blur)="validateDelivery()" required>
+              <mat-option *ngFor="let delivery of deliveries" [value]="delivery.id" class="delivery-option">
+                <div class="delivery-option-content">
+                  <div class="delivery-main">
+                    <strong>{{delivery.destination}}</strong>
+                    <span class="delivery-state" [class]="'state-' + delivery.state.toLowerCase()">
+                      {{delivery.state}}
+                    </span>
+                  </div>
+                  <div class="delivery-description">
+                    <small>{{delivery.packageDescription}}</small>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-select>
+
+            <mat-error *ngIf="deliveryError">
+              <mat-icon style="font-size: 14px; margin-right: 4px;">error</mat-icon>
+              {{deliveryError}}
+            </mat-error>
+          </mat-form-field>
+        </div>
 
         <!-- Lugar del Incidente -->
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Lugar</mat-label>
-          <input matInput [(ngModel)]="incident.incidentPlace" name="incidentPlace" 
-                 placeholder="Ej. Carretera Panamericana Km 45" required />
-        </mat-form-field>
+        <div class="form-section">
+          <mat-form-field appearance="outline" class="w-100" [class.mat-form-field-invalid]="placeError">
+            <mat-label>
+              <mat-icon>place</mat-icon>
+              Lugar del Incidente
+            </mat-label>
+            <input matInput [(ngModel)]="incident.incidentPlace" name="incidentPlace" 
+                   placeholder="Ej. Carretera Panamericana Km 45" 
+                   (blur)="validatePlace()"
+                   (input)="validatePlace()"
+                   required />
+
+            <mat-error *ngIf="placeError">
+              <mat-icon style="font-size: 14px; margin-right: 4px;">error</mat-icon>
+              {{placeError}}
+            </mat-error>
+          </mat-form-field>
+        </div>
 
         <!-- Descripción -->
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Descripción</mat-label>
-          <textarea matInput rows="3" [(ngModel)]="incident.description" name="description" 
-                    placeholder="Describe qué ocurrió..." required></textarea>
-        </mat-form-field>
+        <div class="form-section">
+          <mat-form-field appearance="outline" class="w-100" [class.mat-form-field-invalid]="descriptionError">
+            <mat-label>
+              <mat-icon>description</mat-icon>
+              Descripción del Incidente
+            </mat-label>
+            <textarea matInput rows="4" [(ngModel)]="incident.description" name="description" 
+                      placeholder="Describe detalladamente qué ocurrió, las circunstancias y el impacto..."
+                      (blur)="validateDescription()"
+                      (input)="validateDescription()"
+                      required></textarea>
+
+            <mat-error *ngIf="descriptionError">
+              <mat-icon style="font-size: 14px; margin-right: 4px;">error</mat-icon>
+              {{descriptionError}}
+            </mat-error>
+          </mat-form-field>
+        </div>
 
         <!-- Fecha -->
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Fecha</mat-label>
-          <input matInput type="date" [(ngModel)]="incident.date" name="date" required />
-        </mat-form-field>
+        <div class="form-section">
+          <mat-form-field appearance="outline" class="w-100" [class.mat-form-field-invalid]="dateError">
+            <mat-label>
+              <mat-icon>calendar_today</mat-icon>
+              Fecha del Incidente
+            </mat-label>
+            <input matInput 
+                   type="date" 
+                   [(ngModel)]="incident.date" 
+                   name="date" 
+                   [min]="minDate"
+                   [max]="maxDate"
+                   (change)="validateDate()"
+                   (blur)="validateDate()"
+                   required />
+
+            <mat-error *ngIf="dateError">
+              <mat-icon style="font-size: 14px; margin-right: 4px;">error</mat-icon>
+              {{dateError}}
+            </mat-error>
+          </mat-form-field>
+        </div>
 
         <!-- Selección de Servicio (oculto por defecto) -->
-        <mat-form-field appearance="outline" class="w-100" *ngIf="services.length > 0">
-          <mat-label>Servicio</mat-label>
-          <mat-select [(ngModel)]="incident.serviceId" name="serviceId" required>
-            <mat-option *ngFor="let service of services" [value]="service.id">
-              {{service.nameService}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+        <div class="form-section" *ngIf="services.length > 0">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>
+              <mat-icon>room_service</mat-icon>
+              Servicio
+            </mat-label>
+            <mat-select [(ngModel)]="incident.serviceId" name="serviceId" required>
+              <mat-option *ngFor="let service of services" [value]="service.id">
+                {{service.nameService}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
         <!-- Botones -->
         <div class="button-group">
-          <button type="button" mat-button (click)="onCancel()">
+          <button type="button" mat-raised-button color="warn" (click)="onCancel()" class="cancel-btn">
+            <mat-icon>cancel</mat-icon>
             Cancelar
           </button>
-          <button type="submit" mat-raised-button color="primary" 
-                  [disabled]="!selectedDeliveryId">
+          <button type="submit" mat-raised-button color="primary" class="submit-btn">
             <mat-icon>send</mat-icon>
-            Reportar
+            Reportar Incidente
           </button>
         </div>
       </form>

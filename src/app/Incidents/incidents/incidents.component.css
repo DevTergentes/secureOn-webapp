@@ -551,15 +551,17 @@
   right: 60px !important;
   background-color: #74c04a !important;
   color: white !important;
-  z-index: 1000 !important;
+  z-index: 9999 !important;
   box-shadow: 0 8px 25px rgba(116, 192, 74, 0.4) !important;
   transition: all 0.3s ease !important;
+  cursor: pointer !important;
 }
 
 .floating-add-btn:hover {
   background-color: #5ea836 !important;
   transform: scale(1.1) !important;
   box-shadow: 0 12px 35px rgba(116, 192, 74, 0.6) !important;
+  cursor: pointer !important;
 }
 
 .floating-add-btn mat-icon {
