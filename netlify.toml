@@ -1,6 +1,6 @@
 [build]
   publish = "dist/secureon-webapp/browser"
-  command = "npm install --legacy-peer-deps && npm run build:prod"
+  command = "npm install --legacy-peer-deps && npx ng build --configuration production"
 
 [build.environment]
   NODE_VERSION = "18"
