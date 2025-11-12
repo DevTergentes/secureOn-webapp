@@ -42,7 +42,7 @@ export class SensorCreateComponent {
     try {
       // Consulta employee asociado al user
       const employees = await this.http.get<any[]>(
-        `http://localhost:8080/api/secureon/v1/employees/user/${userId}`
+        `https://secureon-backend-production.up.railway.app/api/secureon/v1/employees/user/${userId}`
       ).toPromise() ?? [];
 
       if (!employees || employees.length === 0) {
@@ -54,7 +54,7 @@ export class SensorCreateComponent {
       // Crear sensor (POST)
       const body = { ownerId, safe: true };
       await this.http.post<any>(
-        'http://localhost:8080/api/secureon/v1/sensors',
+        'https://secureon-backend-production.up.railway.app/api/secureon/v1/sensors',
         body
       ).toPromise();
 

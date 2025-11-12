@@ -36,7 +36,7 @@ export interface Sensor {
   providedIn: 'root'
 })
 export class IncidentService {
-  private API_URL = 'http://localhost:8080/api/secureon/v1';
+  private API_URL = 'https://secureon-backend-production.up.railway.app/api/secureon/v1';
 
   // Umbrales para detectar incidentes automáticos
   private thresholds: IncidentThresholds = {

@@ -13,7 +13,7 @@ import {User} from '../../Profiles/model/users';
 })
 
 export class BaseUserService {
-  private apiUrl = 'http://localhost:8080/api/secureon/v1';
+  private apiUrl = 'https://secureon-backend-production.up.railway.app/api/secureon/v1';
 
   constructor(private http: HttpClient) {}
 

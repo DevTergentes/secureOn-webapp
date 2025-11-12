@@ -12,7 +12,7 @@ import {Sensor} from '../../Management/monitoring/model/monitoring';
 })
 
 export class BaseService {
-  private apiUrl = 'http://localhost:8080/api/secureon/v1';
+  private apiUrl = 'https://secureon-backend-production.up.railway.app/api/secureon/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -108,7 +108,7 @@ export class BaseService {
   }
 
   getLatestRecordByDeliveryId(deliveryId: string): Observable<any> {
-    return this.http.get<any>(`http://localhost:8080/api/secureon/v1/records/delivery/${deliveryId}/latest`);
+    return this.http.get<any>(`https://secureon-backend-production.up.railway.app/api/secureon/v1/records/delivery/${deliveryId}/latest`);
   }
   
   getRecordsByDeliveryId(deliveryId: string): Observable<any[]> {
@@ -124,6 +124,6 @@ export class BaseService {
   }
 
   getEmployeesByUserId(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/secureon/v1/employees/user/${userId}`);
+    return this.http.get<any[]>(`https://secureon-backend-production.up.railway.app/api/secureon/v1/employees/user/${userId}`);
   }
 }

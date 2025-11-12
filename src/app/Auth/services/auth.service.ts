@@ -7,7 +7,7 @@ import { SignupRequest } from '../model/signup-request';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private API_URL = 'http://localhost:8080/api/v1/auth'; // <-- Cambiado a tu backend real
+  private API_URL = 'https://secureon-backend-production.up.railway.app/api/v1/auth'; // <-- Cambiado a tu backend real
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false); // Inicializar como false por defecto
 
   constructor(private http: HttpClient) {
