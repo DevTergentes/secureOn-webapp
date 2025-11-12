@@ -46,8 +46,8 @@ export class DeliveryDetailsComponent implements OnInit {
       this.loadServices(this.deliveryId);
       this.loadSensorByDeliveryId(this.deliveryId);
       /*this.loadLatestRecord(this.deliveryId);*/
-      this.loadLatestRecordFromBeeceptor();
-      this.loadRecordsFromBeeceptor();
+      this.loadLatestRecordFromRailway();
+      this.loadRecordsByDeliveryId(this.deliveryId);
       /*this.loadRecordsByDeliveryId(this.deliveryId);*/
     }
   }
@@ -59,16 +59,18 @@ export class DeliveryDetailsComponent implements OnInit {
     });
   }
 
-  loadRecordsFromBeeceptor(): void {
-    this.baseService.getRecordsFromBeeceptor().subscribe(
-      (data) => {
-        this.recordsBeeceptor = data;
-        console.log('Records desde Beeceptor:', this.recordsBeeceptor);
-      },
-      (error) => {
-        console.error('Error al cargar records desde Beeceptor:', error);
-      }
-    );
+  loadRecordsFromRailway(): void {
+    if (this.deliveryId) {
+      this.baseService.getRecordsByDeliveryId(this.deliveryId).subscribe(
+        (data) => {
+          this.recordsBeeceptor = data;
+          console.log('Records desde Railway para delivery:', this.recordsBeeceptor);
+        },
+        (error) => {
+          console.error('Error al cargar records desde Railway:', error);
+        }
+      );
+    }
   }
 
   loadRecordsByDeliveryId(deliveryId: string): void {
@@ -107,20 +109,22 @@ export class DeliveryDetailsComponent implements OnInit {
     );
   }
 
-  loadLatestRecordFromBeeceptor(): void {
-    this.baseService.getRecordsFromBeeceptor().subscribe(
-      (data) => {
-        if (data && data.length > 0) {
-          this.latestRecordBeeceptor = data[data.length - 1];
-          console.log('Último record desde Beeceptor:', this.latestRecordBeeceptor);
-        } else {
-          this.latestRecordBeeceptor = null;
+  loadLatestRecordFromRailway(): void {
+    if (this.deliveryId) {
+      this.baseService.getRecordsByDeliveryId(this.deliveryId).subscribe(
+        (data) => {
+          if (data && data.length > 0) {
+            this.latestRecordBeeceptor = data[data.length - 1];
+            console.log('Último record desde Railway para delivery:', this.latestRecordBeeceptor);
+          } else {
+            this.latestRecordBeeceptor = null;
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el último record desde Railway:', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el último record desde Beeceptor:', error);
-      }
-    );
+      );
+    }
   }
 
   getMapUrl(lat: number, lng: number): SafeResourceUrl {

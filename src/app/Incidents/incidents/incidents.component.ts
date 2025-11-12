@@ -160,16 +160,28 @@ export class IncidentsComponent implements OnInit {
         manualIncidents = [];
       }
       
-      // Para empleados: usar datos mock de sensores directamente sin depender de APIs externas
+      // Usar datos reales de sensores desde el endpoint específico del delivery
       let sensorRecords: any[] = [];
       let automaticIncidents: any[] = [];
       
-      // Crear datos de sensores simulados pero realistas y consistentes
-      const mockSensorData = this.generateMockSensorData(delivery.id);
-      sensorRecords = mockSensorData;
-      
-      // Detectar incidentes automáticos basados en los datos mock
-      automaticIncidents = this.incidentService.detectAutomaticIncidents(sensorRecords);
+      try {
+        // Cargar datos reales de sensores desde la API de Railway para este delivery específico
+        sensorRecords = await this.baseService.getRecordsByDeliveryId(delivery.id.toString()).toPromise() || [];
+        console.log(`Loaded ${sensorRecords.length} sensor records from Railway for delivery ${delivery.id}`);
+        
+        // Detectar incidentes automáticos basados en los datos reales de sensores
+        if (sensorRecords.length > 0) {
+          automaticIncidents = this.incidentService.detectAutomaticIncidents(sensorRecords);
+          console.log(`Detected ${automaticIncidents.length} automatic incidents for delivery ${delivery.id}`);
+        }
+      } catch (error: any) {
+        console.warn(`Error loading sensor data from Railway for delivery ${delivery.id}:`, error);
+        // Si hay error con la API, usar datos mock como fallback
+        const mockSensorData = this.generateMockSensorData(delivery.id);
+        sensorRecords = mockSensorData;
+        automaticIncidents = this.incidentService.detectAutomaticIncidents(sensorRecords);
+        console.log(`Using fallback mock data: ${automaticIncidents.length} automatic incidents detected`);
+      }
 
       // Crear información de sensores simplificada
       const sensors = [{
@@ -190,6 +202,7 @@ export class IncidentsComponent implements OnInit {
       return result;
       
     } catch (error) {
+      console.error(`Error loading incidents for delivery ${delivery.id}:`, error);
       return {
         delivery,
         manualIncidents: [],

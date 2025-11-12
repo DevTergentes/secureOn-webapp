@@ -110,8 +110,9 @@ export class BaseService {
   getLatestRecordByDeliveryId(deliveryId: string): Observable<any> {
     return this.http.get<any>(`http://localhost:8080/api/secureon/v1/records/delivery/${deliveryId}/latest`);
   }
+  
   getRecordsByDeliveryId(deliveryId: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/records/delivery/${deliveryId}`);
+    return this.http.get<any[]>(`https://secureon-backend-production.up.railway.app/api/secureon/v1/records/delivery/${deliveryId}`);
   }
 
   getRecordsFromBeeceptor(): Observable<any[]> {

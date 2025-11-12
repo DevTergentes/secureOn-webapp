@@ -60,11 +60,11 @@ export class ReportComponent implements OnInit {
     
     console.log('Loading report for delivery ID:', id);
     
-    // Cargar toda la información en paralelo (usando datos reales de sensores)
+    // Cargar toda la información en paralelo (usando datos reales de sensores del endpoint específico)
     forkJoin({
       delivery: this.baseService.getDeliveryById(id),
       manualIncidents: this.incidentService.getIncidentsByDelivery(Number(id)),
-      sensorRecords: this.baseService.getRecordsFromBeeceptor()
+      sensorRecords: this.baseService.getRecordsByDeliveryId(id)
     }).subscribe({
       next: (data) => {
         console.log('Data loaded successfully:', data);
@@ -112,15 +112,15 @@ export class ReportComponent implements OnInit {
             this.delivery = partialData.delivery;
             this.incidents = partialData.manualIncidents || [];
             
-            // Cargar datos reales de sensores desde Beeceptor como fallback
-            console.log('Loading real sensor data from Beeceptor as fallback...');
-            this.baseService.getRecordsFromBeeceptor().subscribe({
+            // Cargar datos reales de sensores desde Railway para este delivery específico como fallback
+            console.log(`Loading real sensor data from Railway for delivery ${id} as fallback...`);
+            this.baseService.getRecordsByDeliveryId(id).subscribe({
               next: (sensorData) => {
                 this.records = sensorData || [];
                 console.log('Real sensor records loaded:', this.records.length);
                 
                 // Generar incidentes automáticos basados en datos reales
-                this.automaticIncidents = this.generateAutomaticIncidents(this.records);
+                this.automaticIncidents = this.incidentService.detectAutomaticIncidents(this.records);
                 console.log('Automatic incidents generated from real data:', this.automaticIncidents.length);
               },
               error: (sensorError) => {
