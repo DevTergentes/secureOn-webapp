@@ -8,19 +8,20 @@ import { SignupRequest } from '../model/signup-request';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private API_URL = 'http://localhost:8080/api/v1/auth'; // <-- Cambiado a tu backend real
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidSession()); // Verificar sesión inmediatamente
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false); // Inicializar como false por defecto
 
   constructor(private http: HttpClient) {
-    // La verificación ya se hace en la inicialización del BehaviorSubject
+    // No verificar inmediatamente, mantener como false hasta login exitoso
   }
 
   private hasValidSession(): boolean {
-    // Verificación síncrona al momento de crear el servicio
+    // Verificación más estricta de sesión válida
     const userData = localStorage.getItem('user');
     if (userData) {
       try {
         const user = JSON.parse(userData);
-        return !!user; // Si hay datos válidos, retorna true
+        // Verificar que el usuario tenga propiedades mínimas necesarias
+        return !!(user && user.id && user.username);
       } catch (error) {
         // Si hay error parsing, limpiar datos corruptos
         localStorage.removeItem('user');
@@ -31,8 +32,27 @@ export class AuthService {
   }
 
   checkInitialAuthState(): void {
-    // Esta función ya no es necesaria, pero la mantengo para compatibilidad
-    // La verificación se hace automáticamente en hasValidSession()
+    console.log('AuthService: Checking initial auth state');
+    // Solo verificar si hay datos de usuario válidos
+    const userData = localStorage.getItem('user');
+    console.log('AuthService: User data from localStorage:', userData);
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (user && user.id) { // Verificar que el usuario tenga datos completos
+          console.log('AuthService: Valid user found, setting authenticated to true');
+          this.isAuthenticatedSubject.next(true);
+          return;
+        }
+      } catch (error) {
+        console.log('AuthService: Error parsing user data, clearing localStorage');
+        // Si hay error, limpiar y mantener como false
+        localStorage.removeItem('user');
+      }
+    }
+    // Por defecto, mantener como false
+    console.log('AuthService: No valid user, setting authenticated to false');
+    this.isAuthenticatedSubject.next(false);
   }
 
   login(req: LoginRequest): Observable<User> {
@@ -53,6 +73,7 @@ export class AuthService {
   }
 
   setAuthenticated(value: boolean): void {
+    console.log('AuthService: Setting authenticated to', value);
     this.isAuthenticatedSubject.next(value);
   }
 

@@ -17,7 +17,11 @@ export class LoginComponent {
   password = '';
   error = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {
+    // Asegurar que el usuario no esté autenticado al cargar la página de login
+    this.authService.setAuthenticated(false);
+    localStorage.removeItem('user');
+  }
 
   onLogin() {
     this.authService.login({ username: this.username, password: this.password }).subscribe({
