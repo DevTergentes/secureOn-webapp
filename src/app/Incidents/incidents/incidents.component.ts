@@ -290,8 +290,108 @@ export class IncidentsComponent implements OnInit {
 
   // Formatear fecha
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    if (!dateString || dateString === 'null' || dateString === 'undefined') {
+      return 'Fecha no disponible';
+    }
+
+    try {
+      let date: Date;
+      
+      // Manejar diferentes formatos de fecha
+      if (typeof dateString === 'string') {
+        // Si es una cadena ISO o similar
+        date = new Date(dateString);
+      } else {
+        // Si ya es un Date object
+        date = new Date(dateString);
+      }
+      
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        console.warn('Fecha inválida recibida:', dateString);
+        return 'Fecha no válida';
+      }
+
+      // Ajustar a zona horaria de Lima (GMT-5)
+      const limaOffset = -5 * 60; // Lima está en GMT-5
+      const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+      const limaTime = new Date(utc + (limaOffset * 60000));
+
+      // Formatear fecha en español peruano
+      const options: Intl.DateTimeFormatOptions = {
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      
+      return limaTime.toLocaleDateString('es-PE', options);
+    } catch (error) {
+      console.error('Error al formatear fecha:', error, 'Fecha original:', dateString);
+      return 'Error al mostrar fecha';
+    }
+  }
+
+  // Formatear solo fecha (sin hora) para incidentes manuales
+  formatDateOnly(dateString: string): string {
+    if (!dateString || dateString === 'null' || dateString === 'undefined' || dateString.trim() === '') {
+      return 'Sin fecha disponible';
+    }
+
+    try {
+      let date: Date;
+      
+      // Debug: mostrar el valor recibido
+      console.log('Formateando fecha recibida:', dateString, 'Tipo:', typeof dateString);
+      
+      // Manejar diferentes formatos
+      if (typeof dateString === 'string') {
+        // Si es formato YYYY-MM-DD, agregar hora para evitar problemas de zona horaria
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          date = new Date(dateString + 'T12:00:00.000Z'); // Mediodía UTC
+        } else {
+          date = new Date(dateString);
+        }
+      } else {
+        date = new Date(dateString);
+      }
+      
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        console.warn('Fecha inválida después de parsing:', dateString);
+        return 'Fecha no válida';
+      }
+
+      // Formatear usando directamente la zona horaria de Lima
+      const options: Intl.DateTimeFormatOptions = {
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+      
+      const formatted = date.toLocaleDateString('es-PE', options);
+      console.log('Fecha formateada:', formatted);
+      
+      return formatted;
+    } catch (error) {
+      console.error('Error al formatear fecha:', error, 'Fecha original:', dateString);
+      return 'Error al mostrar fecha';
+    }
+  }
+
+  // Nueva función específica para Lima con fecha actual
+  getCurrentLimaDate(): string {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'America/Lima',
+      year: 'numeric',
+      month: 'long', 
+      day: 'numeric'
+    };
+    return now.toLocaleDateString('es-PE', options);
   }
 
   // Métodos para obtener estado y clase CSS de los valores de sensores
