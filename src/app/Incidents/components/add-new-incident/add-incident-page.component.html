@@ -12,13 +12,9 @@
         
         <!-- Selección de Delivery -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>
-            <mat-icon>local_shipping</mat-icon>
-            Delivery
-          </mat-label>
+          <mat-label>Delivery</mat-label>
           <mat-select [(ngModel)]="selectedDeliveryId" name="deliveryId" 
-                      (selectionChange)="onDeliveryChange()" required
-                      placeholder="Selecciona un delivery">
+                      (selectionChange)="onDeliveryChange()" required>
             <mat-option *ngFor="let delivery of deliveries" [value]="delivery.id">
               <div class="delivery-option">
                 <strong>{{delivery.destination}}</strong>
@@ -26,57 +22,27 @@
               </div>
             </mat-option>
           </mat-select>
-          <mat-hint>
-            <mat-icon>info</mat-icon>
-            Selecciona el delivery afectado por el incidente
-          </mat-hint>
+          <mat-hint>Selecciona el delivery afectado</mat-hint>
         </mat-form-field>
 
         <!-- Lugar del Incidente -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>
-            <mat-icon>location_on</mat-icon>
-            Lugar del Incidente
-          </mat-label>
+          <mat-label>Lugar</mat-label>
           <input matInput [(ngModel)]="incident.incidentPlace" name="incidentPlace" 
                  placeholder="Ej. Carretera Panamericana Km 45" required />
-          <mat-hint>Especifica la ubicación exacta donde ocurrió el incidente</mat-hint>
         </mat-form-field>
 
         <!-- Descripción -->
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>
-            <mat-icon>description</mat-icon>
-            Descripción del Incidente
-          </mat-label>
-          <textarea matInput rows="4" [(ngModel)]="incident.description" name="description" 
-                    placeholder="Describe detalladamente qué ocurrió, las circunstancias y el impacto..." required></textarea>
-          <mat-hint>Proporciona todos los detalles relevantes del incidente</mat-hint>
+          <mat-label>Descripción</mat-label>
+          <textarea matInput rows="3" [(ngModel)]="incident.description" name="description" 
+                    placeholder="Describe qué ocurrió..." required></textarea>
         </mat-form-field>
 
         <!-- Fecha -->
-        <mat-form-field appearance="outline" class="w-100" [class.mat-form-field-invalid]="dateError">
-          <mat-label>
-            <mat-icon>calendar_today</mat-icon>
-            Fecha del Incidente
-          </mat-label>
-          <input matInput 
-                 type="date" 
-                 [(ngModel)]="incident.date" 
-                 name="date" 
-                 [min]="minDate"
-                 [max]="maxDate"
-                 (change)="validateDate()"
-                 (blur)="validateDate()"
-                 required />
-          <mat-hint *ngIf="!dateError">
-            <mat-icon style="font-size: 14px; margin-right: 4px;">info</mat-icon>
-            Selecciona cuándo ocurrió el incidente (solo fechas del año 2025)
-          </mat-hint>
-          <mat-error *ngIf="dateError">
-            <mat-icon style="font-size: 14px; margin-right: 4px;">error</mat-icon>
-            {{dateError}}
-          </mat-error>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Fecha</mat-label>
+          <input matInput type="date" [(ngModel)]="incident.date" name="date" required />
         </mat-form-field>
 
         <!-- Selección de Servicio (oculto por defecto) -->
@@ -91,14 +57,13 @@
 
         <!-- Botones -->
         <div class="button-group">
-          <button type="button" mat-stroked-button (click)="onCancel()">
-            <mat-icon>cancel</mat-icon>
+          <button type="button" mat-button (click)="onCancel()">
             Cancelar
           </button>
           <button type="submit" mat-raised-button color="primary" 
-                  [disabled]="!selectedDeliveryId || !incident.incidentPlace || !incident.description || !incident.date">
+                  [disabled]="!selectedDeliveryId">
             <mat-icon>send</mat-icon>
-            Reportar Incidente
+            Reportar
           </button>
         </div>
       </form>
