@@ -228,7 +228,7 @@
               </div>
               <div class="detail-row">
                 <mat-icon>description</mat-icon>
-                <span><strong>Descripción:</strong> {{ incident.message }}</span>
+                <span><strong>Descripción:</strong> {{ incident.description }}</span>
               </div>
               <div class="detail-row">
                 <mat-icon>event</mat-icon>
@@ -236,15 +236,11 @@
               </div>
               <div class="detail-row">
                 <mat-icon>speed</mat-icon>
-                <span><strong>Valor actual:</strong> {{ incident.value }} {{ getSensorUnit(incident.source) }}</span>
+                <span><strong>Valor detectado:</strong> {{ incident.value }} {{ incident.unit }}</span>
               </div>
               <div class="detail-row">
-                <mat-icon>warning</mat-icon>
-                <span><strong>Umbral superado:</strong> {{ incident.threshold }} {{ getSensorUnit(incident.source) }}</span>
-              </div>
-              <div class="detail-row">
-                <mat-icon>memory</mat-icon>
-                <span><strong>Sensor ID:</strong> {{ incident.sensorId }}</span>
+                <mat-icon>place</mat-icon>
+                <span><strong>Ubicación:</strong> {{ incident.location }}</span>
               </div>
             </div>
           </div>

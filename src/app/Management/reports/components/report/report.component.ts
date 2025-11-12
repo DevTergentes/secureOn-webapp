@@ -60,11 +60,11 @@ export class ReportComponent implements OnInit {
     
     console.log('Loading report for delivery ID:', id);
     
-    // Cargar toda la información en paralelo
+    // Cargar toda la información en paralelo (usando datos reales de sensores)
     forkJoin({
       delivery: this.baseService.getDeliveryById(id),
       manualIncidents: this.incidentService.getIncidentsByDelivery(Number(id)),
-      sensorRecords: this.baseSensorService.getRecordsByDeliveryId(id)
+      sensorRecords: this.baseService.getRecordsFromBeeceptor()
     }).subscribe({
       next: (data) => {
         console.log('Data loaded successfully:', data);
@@ -111,11 +111,28 @@ export class ReportComponent implements OnInit {
             console.log('Partial data loaded:', partialData);
             this.delivery = partialData.delivery;
             this.incidents = partialData.manualIncidents || [];
-            this.records = [];
-            this.automaticIncidents = [];
+            
+            // Cargar datos reales de sensores desde Beeceptor como fallback
+            console.log('Loading real sensor data from Beeceptor as fallback...');
+            this.baseService.getRecordsFromBeeceptor().subscribe({
+              next: (sensorData) => {
+                this.records = sensorData || [];
+                console.log('Real sensor records loaded:', this.records.length);
+                
+                // Generar incidentes automáticos basados en datos reales
+                this.automaticIncidents = this.generateAutomaticIncidents(this.records);
+                console.log('Automatic incidents generated from real data:', this.automaticIncidents.length);
+              },
+              error: (sensorError) => {
+                console.error('Failed to load real sensor data:', sensorError);
+                this.records = [];
+                this.automaticIncidents = [];
+              }
+            });
+            
             this.loading = false;
             
-            console.log(`Report loaded with ${this.incidents.length} manual incidents only`);
+            console.log(`Report loaded with ${this.incidents.length} manual incidents and ${this.automaticIncidents.length} automatic incidents`);
           },
           error: (partialError) => {
             console.error('Failed to load even partial data:', partialError);
@@ -361,5 +378,97 @@ export class ReportComponent implements OnInit {
     if (lowCount > 0) parts.push(`${lowCount} bajo(s)`);
     
     return summary + parts.join(', ');
+  }
+
+
+
+  // Generar incidentes automáticos basados en datos reales de sensores IoT
+  private generateAutomaticIncidents(sensorRecords: any[]): any[] {
+    const incidents: any[] = [];
+    
+    if (!sensorRecords || sensorRecords.length === 0) {
+      console.log('No hay registros de sensores para analizar');
+      return incidents;
+    }
+    
+    console.log('🔍 Analizando registros de sensores para detectar incidentes...');
+    
+    sensorRecords.forEach((record, index) => {
+      // Asegurar que el timestamp es válido
+      let timestamp: Date;
+      try {
+        timestamp = record.timestamp ? new Date(record.timestamp) : new Date();
+      } catch (error) {
+        timestamp = new Date();
+      }
+      
+      console.log(`Registro ${index + 1}: Gas=${record.gasValue}ppm, Temp=${record.temperatureValue}°C, HR=${record.heartRateValue}BPM`);
+      
+      // Detectar gas peligroso (>80 ppm) - Datos reales del IoT
+      if (record.gasValue && record.gasValue > 80) {
+        console.log(`⚠️  Gas peligroso detectado: ${record.gasValue} ppm`);
+      }
+      if (record.gasValue && record.gasValue > 80) {
+        incidents.push({
+          id: `auto_gas_${index}`,
+          type: 'automatic',
+          source: 'gas_sensor',
+          severity: record.gasValue > 95 ? 'high' : 'medium',
+          description: `Nivel de gas detectado: ${record.gasValue} ppm (Límite de seguridad: 80 ppm)`,
+          timestamp: timestamp,
+          value: record.gasValue,
+          unit: 'ppm',
+          location: 'Zona de trabajo'
+        });
+      }
+      
+      // Detectar temperatura alta (>45°C) - Datos reales del IoT  
+      if (record.temperatureValue && record.temperatureValue > 45) {
+        console.log(`🌡️  Temperatura alta detectada: ${record.temperatureValue}°C`);
+      }
+      if (record.temperatureValue && record.temperatureValue > 45) {
+        incidents.push({
+          id: `auto_temp_${index}`,
+          type: 'automatic',
+          source: 'temperature_sensor',
+          severity: record.temperatureValue > 55 ? 'high' : 'medium',
+          description: `Temperatura elevada: ${record.temperatureValue}°C (Límite de seguridad: 45°C)`,
+          timestamp: timestamp,
+          value: record.temperatureValue,
+          unit: '°C',
+          location: 'Ambiente de trabajo'
+        });
+      }
+      
+      // Detectar ritmo cardíaco anormal - Datos reales del IoT
+      if (record.heartRateValue && (record.heartRateValue > 120 || record.heartRateValue < 70)) {
+        console.log(`💓 Ritmo cardíaco anormal detectado: ${record.heartRateValue} BPM`);
+        const isHigh = record.heartRateValue > 120;
+        incidents.push({
+          id: `auto_hr_${index}`,
+          type: 'automatic',
+          source: 'heart_rate_sensor',
+          severity: (record.heartRateValue > 140 || record.heartRateValue < 60) ? 'high' : 'medium',
+          description: `Ritmo cardíaco ${isHigh ? 'elevado' : 'bajo'}: ${record.heartRateValue} BPM (Rango normal: 70-120 BPM)`,
+          timestamp: timestamp,
+          value: record.heartRateValue,
+          unit: 'BPM',
+          location: 'Trabajador'
+        });
+      }
+    });
+    
+    console.log(`📊 ANÁLISIS DE SENSORES COMPLETADO:`);
+    console.log(`• Total registros de sensores analizados: ${sensorRecords.length}`);
+    console.log(`• Incidentes automáticos detectados: ${incidents.length}`);
+    console.log(`• Breakdown de incidentes:`);
+    const gasIncidents = incidents.filter(i => i.source === 'gas_sensor').length;
+    const tempIncidents = incidents.filter(i => i.source === 'temperature_sensor').length;
+    const hrIncidents = incidents.filter(i => i.source === 'heart_rate_sensor').length;
+    console.log(`  - Gas peligroso (>80 ppm): ${gasIncidents}`);
+    console.log(`  - Temperatura alta (>45°C): ${tempIncidents}`);
+    console.log(`  - Ritmo cardíaco anormal: ${hrIncidents}`);
+    
+    return incidents;
   }
 }
