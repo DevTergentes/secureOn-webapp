@@ -32,26 +32,21 @@ export class AuthService {
   }
 
   checkInitialAuthState(): void {
-    console.log('AuthService: Checking initial auth state');
     // Solo verificar si hay datos de usuario válidos
     const userData = localStorage.getItem('user');
-    console.log('AuthService: User data from localStorage:', userData);
     if (userData) {
       try {
         const user = JSON.parse(userData);
         if (user && user.id) { // Verificar que el usuario tenga datos completos
-          console.log('AuthService: Valid user found, setting authenticated to true');
           this.isAuthenticatedSubject.next(true);
           return;
         }
       } catch (error) {
-        console.log('AuthService: Error parsing user data, clearing localStorage');
         // Si hay error, limpiar y mantener como false
         localStorage.removeItem('user');
       }
     }
     // Por defecto, mantener como false
-    console.log('AuthService: No valid user, setting authenticated to false');
     this.isAuthenticatedSubject.next(false);
   }
 
@@ -73,7 +68,6 @@ export class AuthService {
   }
 
   setAuthenticated(value: boolean): void {
-    console.log('AuthService: Setting authenticated to', value);
     this.isAuthenticatedSubject.next(value);
   }
 

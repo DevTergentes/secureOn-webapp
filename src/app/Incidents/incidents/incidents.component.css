@@ -48,35 +48,92 @@
   box-shadow: 0 8px 25px rgba(24, 56, 86, 0.15) !important;
   border: 2px solid #74c04a !important;
   overflow: hidden !important;
+  background: #ffffff !important;
+  margin-bottom: 20px;
+}
+
+/* Estilos para el header del panel de expansión */
+.delivery-panel .mat-expansion-panel-header {
+  padding: 20px 24px !important;
+  min-height: 80px !important;
+  border-radius: 15px !important;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa) !important;
+  transition: all 0.3s ease !important;
+}
+
+.delivery-panel .mat-expansion-panel-header:hover {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+  box-shadow: inset 0 2px 8px rgba(116, 192, 74, 0.1) !important;
+}
+
+.delivery-panel .mat-expansion-panel-header.mat-expanded {
+  border-bottom: 2px solid #74c04a !important;
+  border-radius: 15px 15px 0 0 !important;
+}
+
+/* Mejorar el contenido del panel */
+.delivery-panel .mat-expansion-panel-content .mat-expansion-panel-body {
+  padding: 24px !important;
+  background: #fafbfc !important;
 }
 
 .delivery-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
-  padding: 10px 0;
+  padding: 0;
+  gap: 20px;
+  flex-wrap: wrap;
+  min-height: 60px;
 }
 
-.delivery-info h3 {
+.delivery-info {
+  flex: 1;
+  min-width: 280px;
+  padding: 8px 0;
+}
+
+.delivery-main-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.delivery-title {
   color: #183856;
-  font-size: 1.4em;
+  font-size: 1.5em;
   font-weight: 700;
   margin: 0;
+  line-height: 1.3;
+  word-break: break-word;
+  text-shadow: 0 1px 2px rgba(24, 56, 86, 0.1);
 }
 
 .delivery-description {
   color: #666666;
-  margin: 5px 0;
-  font-size: 0.9em;
+  margin: 0;
+  font-size: 0.95em;
+  line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  padding-right: 10px;
+  max-width: 100%;
 }
 
 .delivery-state {
-  padding: 4px 12px;
-  border-radius: 15px;
+  padding: 8px 16px;
+  border-radius: 25px;
   font-size: 0.8em;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
 }
 
 .state-pending { background: #fff3cd; color: #856404; }
@@ -86,22 +143,106 @@
 
 /* Chips de resumen */
 .incidents-summary {
-  margin-left: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  padding: 12px 0;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.chip-automatic {
-  background-color: #ff6b6b !important;
-  color: white !important;
+.incidents-summary mat-chip-set {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Estilos base para todos los chips */
+.chip-manual, .chip-automatic, .chip-safe {
+  min-width: 120px !important;
+  height: 40px !important;
+  padding: 0 16px !important;
+  font-size: 0.85em !important;
+  font-weight: 700 !important;
+  border-radius: 25px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  border: none !important;
+  outline: none !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
 .chip-manual {
-  background-color: #4ecdc4 !important;
+  background: linear-gradient(135deg, #4ecdc4, #26a69a) !important;
   color: white !important;
+  box-shadow: 0 4px 14px rgba(78, 205, 196, 0.35) !important;
+}
+
+.chip-manual:hover {
+  background: linear-gradient(135deg, #26a69a, #00695c) !important;
+  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.45) !important;
+  transform: translateY(-2px) !important;
+}
+
+.chip-automatic {
+  background: linear-gradient(135deg, #ff6b6b, #e53935) !important;
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35) !important;
+}
+
+.chip-automatic:hover {
+  background: linear-gradient(135deg, #e53935, #c62828) !important;
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.45) !important;
+  transform: translateY(-2px) !important;
 }
 
 .chip-safe {
-  background-color: #74c04a !important;
+  background: linear-gradient(135deg, #74c04a, #558b2f) !important;
   color: white !important;
+  box-shadow: 0 4px 14px rgba(116, 192, 74, 0.35) !important;
+}
+
+.chip-safe:hover {
+  background: linear-gradient(135deg, #558b2f, #33691e) !important;
+  box-shadow: 0 6px 20px rgba(116, 192, 74, 0.45) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Chip priority especial para conductor */
+.priority-chip {
+  min-width: 130px !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4), 0 0 0 3px rgba(78, 205, 196, 0.2) !important;
+  animation: priority-pulse 2s infinite ease-in-out !important;
+}
+
+@keyframes priority-pulse {
+  0%, 100% { 
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4), 0 0 0 3px rgba(78, 205, 196, 0.2) !important; 
+  }
+  50% { 
+    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.5), 0 0 0 5px rgba(78, 205, 196, 0.3) !important; 
+  }
+}
+
+/* Iconos dentro de los chips */
+.chip-manual mat-icon,
+.chip-automatic mat-icon,
+.chip-safe mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
 }
 
 /* Contenido del panel */
@@ -126,14 +267,17 @@
 
 .incidents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
 }
 
 /* Tarjetas de incidentes */
 .incident-card {
   border-radius: 12px !important;
   transition: all 0.3s ease !important;
+  overflow: hidden !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .incident-card:hover {
@@ -147,6 +291,88 @@
 
 .incident-card.manual {
   border-left: 5px solid #4ecdc4 !important;
+  border-left-width: 6px !important;
+}
+
+.incident-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.incident-icon {
+  flex-shrink: 0;
+  margin-top: 4px;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 24px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.manual-icon {
+  background-color: #4ecdc4 !important;
+  color: white !important;
+}
+
+.automatic-icon {
+  background-color: #ff6b6b !important;
+  color: white !important;
+}
+
+.incident-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.incident-title {
+  font-size: 1.1em !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin: 0 !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+.incident-subtitle {
+  font-size: 0.85em !important;
+  color: #666 !important;
+  margin: 4px 0 0 0 !important;
+}
+
+.incident-content {
+  padding: 16px !important;
+  padding-top: 8px !important;
+}
+
+.incident-message, .incident-description {
+  margin: 0 0 12px 0 !important;
+  line-height: 1.5 !important;
+  color: #333 !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+.incident-details {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 12px !important;
+}
+
+.detail-tag {
+  padding: 6px 10px !important;
+  background: rgba(116, 192, 74, 0.1) !important;
+  border: 1px solid rgba(116, 192, 74, 0.3) !important;
+  border-radius: 20px !important;
+  font-size: 0.8em !important;
+  white-space: nowrap !important;
+  color: #183856 !important;
 }
 
 /* Severidad de incidentes automáticos */
@@ -321,8 +547,8 @@
 /* Botón flotante para agregar incidente */
 .floating-add-btn {
   position: fixed !important;
-  bottom: 30px !important;
-  right: 30px !important;
+  bottom: 100px !important;
+  right: 60px !important;
   background-color: #74c04a !important;
   color: white !important;
   z-index: 1000 !important;
@@ -423,6 +649,154 @@
   0% { opacity: 1; }
   50% { opacity: 0.7; }
   100% { opacity: 1; }
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 768px) {
+  .incidents-container {
+    padding: 15px;
+  }
+  
+  .header h1 {
+    font-size: 1.8em;
+  }
+  
+  .delivery-panel .mat-expansion-panel-header {
+    padding: 16px 20px !important;
+    min-height: 70px !important;
+  }
+  
+  .delivery-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: auto;
+  }
+  
+  .delivery-main-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .delivery-title {
+    font-size: 1.3em;
+  }
+  
+  .delivery-description {
+    padding-right: 0;
+    margin-top: 5px;
+  }
+  
+  .incidents-summary {
+    width: 100%;
+    margin-left: 0;
+    padding: 16px 0 8px 0;
+    justify-content: flex-start;
+  }
+  
+  .incidents-summary mat-chip-set {
+    gap: 10px;
+    justify-content: flex-start !important;
+  }
+  
+  .chip-manual, .chip-automatic, .chip-safe {
+    min-width: 110px !important;
+    height: 36px !important;
+    font-size: 0.8em !important;
+  }
+  
+  .priority-chip {
+    min-width: 120px !important;
+  }
+  
+  .incidents-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .incident-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .incident-icon {
+    align-self: flex-start;
+  }
+  
+  .incident-details {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .detail-tag {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .incidents-container {
+    padding: 10px;
+  }
+  
+  .header h1 {
+    font-size: 1.6em;
+  }
+  
+  .delivery-panel .mat-expansion-panel-header {
+    padding: 14px 16px !important;
+    min-height: 60px !important;
+  }
+  
+  .delivery-header {
+    gap: 12px;
+  }
+  
+  .delivery-title {
+    font-size: 1.2em;
+  }
+  
+  .delivery-description {
+    font-size: 0.9em;
+  }
+  
+  .chip-manual, .chip-automatic, .chip-safe {
+    min-width: 100px !important;
+    height: 32px !important;
+    font-size: 0.75em !important;
+    gap: 4px !important;
+  }
+  
+  .priority-chip {
+    min-width: 110px !important;
+  }
+  
+  .chip-manual mat-icon,
+  .chip-automatic mat-icon,
+  .chip-safe mat-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+  
+  .incidents-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .incident-content {
+    padding: 12px !important;
+  }
+  
+  .incident-title {
+    font-size: 1em !important;
+  }
+  
+  .incident-subtitle {
+    font-size: 0.8em !important;
+  }
 }
 
 /* Umbrales */

@@ -31,23 +31,25 @@
         <mat-panel-title>
           <div class="delivery-header">
             <div class="delivery-info">
-              <h3>{{item.delivery.destination}}</h3>
+              <div class="delivery-main-info">
+                <h3 class="delivery-title">{{item.delivery.destination}}</h3>
+                <span class="delivery-state" [class]="'state-' + item.delivery.state.toLowerCase()">
+                  {{item.delivery.state}}
+                </span>
+              </div>
               <p class="delivery-description">{{item.delivery.packageDescription}}</p>
-              <span class="delivery-state" [class]="'state-' + item.delivery.state.toLowerCase()">
-                {{item.delivery.state}}
-              </span>
             </div>
             <div class="incidents-summary">
               <mat-chip-set>
+                <mat-chip *ngIf="item.manualIncidents.length > 0"
+                         class="chip-manual priority-chip">
+                  <mat-icon>person</mat-icon>
+                  {{item.manualIncidents.length}} Conductor
+                </mat-chip>
                 <mat-chip *ngIf="item.automaticIncidents.length > 0"
                          class="chip-automatic">
                   <mat-icon>sensors</mat-icon>
-                  {{item.automaticIncidents.length}} Automático(s)
-                </mat-chip>
-                <mat-chip *ngIf="item.manualIncidents.length > 0"
-                         class="chip-manual">
-                  <mat-icon>person</mat-icon>
-                  {{item.manualIncidents.length}} Manual(es)
+                  {{item.automaticIncidents.length}} Sensor
                 </mat-chip>
                 <mat-chip *ngIf="item.totalIncidents === 0"
                          class="chip-safe">
@@ -63,7 +65,33 @@
       <!-- Contenido del Panel -->
       <div class="panel-content">
 
-        <!-- Incidentes Automáticos (Sensores) -->
+        <!-- Incidentes Reportados por Conductor (PRIMERO) -->
+        <div class="incidents-section" *ngIf="item.manualIncidents.length > 0">
+          <h4><mat-icon>person</mat-icon> Incidentes Reportados por Conductor</h4>
+          <div class="incidents-grid">
+            <mat-card
+              class="incident-card manual"
+              *ngFor="let incident of item.manualIncidents">
+              <mat-card-header>
+                <div class="incident-card-header">
+                  <mat-icon class="incident-icon manual-icon">report</mat-icon>
+                  <div class="incident-title-section">
+                    <mat-card-title class="incident-title">{{incident.incidentPlace}}</mat-card-title>
+                    <mat-card-subtitle class="incident-subtitle">{{formatDate(incident.date)}}</mat-card-subtitle>
+                  </div>
+                </div>
+              </mat-card-header>
+              <mat-card-content class="incident-content">
+                <p class="incident-description">{{incident.description}}</p>
+                <div class="incident-details">
+                  <span class="detail-tag"><strong>Servicio ID:</strong> {{incident.serviceId}}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Incidentes Automáticos (Sensores) - SEGUNDO -->
         <div class="incidents-section" *ngIf="item.automaticIncidents.length > 0">
           <h4><mat-icon>sensors</mat-icon> Incidentes Detectados por Sensores</h4>
           <div class="incidents-grid">
@@ -72,50 +100,32 @@
               *ngFor="let incident of item.automaticIncidents"
               [class]="getSeverityClass(incident.severity)">
               <mat-card-header>
-                <mat-icon mat-card-avatar [color]="incident.severity === 'CRITICAL' ? 'warn' : 'primary'">
-                  {{getSensorIcon(incident.source)}}
-                </mat-icon>
-                <mat-card-title>
-                  {{incident.source === 'GAS' ? 'Gas' : incident.source === 'TEMPERATURE' ? 'Temperatura' : 'Ritmo Cardíaco'}}
-                  - {{incident.severity}}
-                </mat-card-title>
-                <mat-card-subtitle>{{formatDate(incident.timestamp)}}</mat-card-subtitle>
+                <div class="incident-card-header">
+                  <mat-icon class="incident-icon automatic-icon" [color]="incident.severity === 'CRITICAL' ? 'warn' : 'primary'">
+                    {{getSensorIcon(incident.source)}}
+                  </mat-icon>
+                  <div class="incident-title-section">
+                    <mat-card-title class="incident-title">
+                      {{incident.source === 'GAS' ? 'Gas' : incident.source === 'TEMPERATURE' ? 'Temperatura' : 'Ritmo Cardíaco'}}
+                      - {{incident.severity}}
+                    </mat-card-title>
+                    <mat-card-subtitle class="incident-subtitle">{{formatDate(incident.timestamp)}}</mat-card-subtitle>
+                  </div>
+                </div>
               </mat-card-header>
-              <mat-card-content>
+              <mat-card-content class="incident-content">
                 <p class="incident-message">{{incident.message}}</p>
                 <div class="incident-details">
-                  <span><strong>Valor actual:</strong>
+                  <span class="detail-tag"><strong>Valor actual:</strong>
                     {{incident.value}}{{incident.source === 'GAS' ? ' ppm' : incident.source === 'TEMPERATURE' ? ' °C' : ' BPM'}}
                   </span>
-                  <span><strong>Umbral superado:</strong>
+                  <span class="detail-tag"><strong>Umbral superado:</strong>
                     {{incident.threshold}}{{incident.source === 'GAS' ? ' ppm' : incident.source === 'TEMPERATURE' ? ' °C' : ' BPM'}}
                   </span>
-                  <span><strong>Sensor ID:</strong> {{incident.sensorId}}</span>
+                  <span class="detail-tag"><strong>Sensor ID:</strong> {{incident.sensorId}}</span>
                   <span class="severity-badge" [class]="getSeverityClass(incident.severity)">
                     {{incident.severity}}
                   </span>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-        </div>
-
-        <!-- Incidentes Manuales -->
-        <div class="incidents-section" *ngIf="item.manualIncidents.length > 0">
-          <h4><mat-icon>person</mat-icon> Incidentes Reportados por Conductor</h4>
-          <div class="incidents-grid">
-            <mat-card
-              class="incident-card manual"
-              *ngFor="let incident of item.manualIncidents">
-              <mat-card-header>
-                <mat-icon mat-card-avatar color="accent">report</mat-icon>
-                <mat-card-title>{{incident.incidentPlace}}</mat-card-title>
-                <mat-card-subtitle>{{formatDate(incident.date)}}</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <p class="incident-description">{{incident.description}}</p>
-                <div class="incident-details">
-                  <span><strong>Servicio ID:</strong> {{incident.serviceId}}</span>
                 </div>
               </mat-card-content>
             </mat-card>

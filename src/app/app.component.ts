@@ -22,13 +22,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('AppComponent ngOnInit - Current path:', window.location.pathname);
     // Verificar el estado solo si estamos en una ruta que no sea login o signup
     if (!['/login', '/signup'].includes(window.location.pathname)) {
-      console.log('Checking initial auth state...');
       this.authService.checkInitialAuthState();
     } else {
-      console.log('On login/signup page, ensuring not authenticated');
       this.authService.setAuthenticated(false);
     }
   }
